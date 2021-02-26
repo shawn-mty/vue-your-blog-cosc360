@@ -35,7 +35,7 @@
 
     <v-main>
       <HelloWorld />
-      <v-btn >SUP</v-btn>
+   
     </v-main>
   </v-app>
 </template>
