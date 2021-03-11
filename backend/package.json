@@ -1,0 +1,47 @@
+{
+  "name": "express-sequelize-api-boilerplate",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "test:cover": "jest --coverage",
+    "start": "nodemon server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@babel/core": "^7.13.10",
+    "@babel/plugin-proposal-object-rest-spread": "^7.13.8",
+    "@babel/plugin-transform-runtime": "^7.13.10",
+    "@babel/preset-env": "^7.13.10",
+    "@babel/register": "^7.13.8",
+    "@babel/runtime": "^7.13.10",
+    "axios": "^0.21.1",
+    "babel-loader": "^8.2.2",
+    "body-parser": "^1.19.0",
+    "cluster": "^0.7.7",
+    "cors": "^2.8.5",
+    "crypto": "^1.0.1",
+    "dotenv": "^8.2.0",
+    "express": "^4.16.4",
+    "express-joi-validator": "^2.0.1",
+    "express-validation": "^1.0.3",
+    "http": "0.0.0",
+    "jest": "^24.9.0",
+    "joi": "^14.3.1",
+    "jsonwebtoken": "^8.5.1",
+    "mock-express-response": "^0.2.2",
+    "mysql2": "^1.7.0",
+    "nodemon": "^1.19.4",
+    "os": "^0.1.1",
+    "sequelize": "^5.22.3",
+    "sequelize-cli": "^5.5.1"
+  },
+  "devDependencies": {
+    "babel-jest": "^24.9.0",
+    "eslint": "^5.16.0",
+    "eslint-config-airbnb-base": "^13.2.0",
+    "eslint-plugin-import": "^2.22.1"
+  }
+}
