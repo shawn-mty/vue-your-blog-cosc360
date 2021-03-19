@@ -1,0 +1,19 @@
+{
+  "name": "backend-prisma",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "node index.js",
+    "introspect": "npx prisma introspect",
+    "generate": "npx prisma generate"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "prisma": "^2.18.0"
+  },
+  "dependencies": {
+    "@prisma/client": "^2.18.0"
+  }
+}
