@@ -5,12 +5,12 @@
         <v-form>
           <v-text-field
             v-model="username"
-            :error-messages="nameErrors"
-            :counter="10"
+            :error-messages="usernameErrors"
+            :counter="charCount"
             label="Username"
             required
-            @input="$v.name.$touch()"
-            @blur="$v.name.$touch()"
+            @input="$v.username.$touch()"
+            @blur="$v.username.$touch()"
           ></v-text-field>
           <v-text-field
             v-model="password"
@@ -29,7 +29,7 @@
             @blur="$v.email.$touch()"
           ></v-text-field>
           <v-file-input
-            :rules="rules"
+            :rules="imageRules"
             accept="image/png, image/jpeg, image/bmp"
             placeholder="Pick an avatar"
             prepend-icon="mdi-camera"
@@ -64,7 +64,8 @@ export default {
   mixins: [validationMixin],
 
   validations: {
-    name: { required, maxLength: maxLength(10) },
+    username: { required, maxLength: maxLength(14) },
+    password: { required, maxLength: maxLength(14) },
     email: { required, email },
     checkbox: {
       checked(val) {
@@ -74,10 +75,18 @@ export default {
   },
 
   data: () => ({
-    name: '',
+    username: '',
+    password: '',
     email: '',
     select: null,
     checkbox: false,
+    charCount: 14,
+    imageRules: [
+      value =>
+        !value ||
+        value.size < 4000000 ||
+        'Avatar size should be less than 4 MB!',
+    ],
   }),
 
   computed: {
@@ -87,20 +96,24 @@ export default {
       !this.$v.checkbox.checked && errors.push('You must agree to continue!')
       return errors
     },
-    nameErrors() {
+    usernameErrors() {
       const errors = []
-      if (!this.$v.name.$dirty) return errors
-      !this.$v.name.maxLength &&
-        errors.push('Name must be at most 10 characters long')
-      !this.$v.name.required && errors.push('Name is required.')
+      if (!this.$v.username.$dirty) return errors
+      !this.$v.username.maxLength &&
+        errors.push(
+          'Username must be at most ' + this.charCount + ' characters long'
+        )
+      !this.$v.username.required && errors.push('Username is required.')
       return errors
     },
     passwordErrors() {
       const errors = []
-      if (!this.$v.name.$dirty) return errors
-      !this.$v.name.maxLength &&
-        errors.push('Name must be at most 10 characters long')
-      !this.$v.name.required && errors.push('Name is required.')
+      if (!this.$v.password.$dirty) return errors
+      !this.$v.password.maxLength &&
+        errors.push(
+          'Password must be at most ' + this.charCount + ' characters long'
+        )
+      !this.$v.password.required && errors.push('Password is required.')
       return errors
     },
     emailErrors() {

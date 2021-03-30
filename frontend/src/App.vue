@@ -2,7 +2,9 @@
   <v-app>
     <v-app-bar app color="primary" dark>
       <div class="d-flex align-center">
-        <h1>Vue Your Blog</h1>
+        <router-link to="/">
+          <h1 class=" white--text">Vue Your Blog</h1>
+        </router-link>
       </div>
 
       <v-spacer></v-spacer>
