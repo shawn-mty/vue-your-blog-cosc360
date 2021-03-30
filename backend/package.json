@@ -1,0 +1,34 @@
+{
+  "name": "backend-prisma",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "backend": "node src/index.js",
+    "introspect": "npx prisma introspect",
+    "generate": "npx prisma generate",
+    "data-ui": "npx prisma studio"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "eslint": "^7.22.0",
+    "eslint-config-prettier": "^8.1.0",
+    "eslint-config-standard": "^16.0.2",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prettier": "^3.3.1",
+    "eslint-plugin-promise": "^4.3.1",
+    "prettier": "^2.2.1",
+    "prisma": "^2.20.0"
+  },
+  "dependencies": {
+    "@prisma/client": "^2.20.0",
+    "body-parser": "1.19.0",
+    "cors": "^2.8.5",
+    "express": "4.17.1"
+  },
+  "engines": {
+    "node": ">=10.0.0"
+  }
+}
