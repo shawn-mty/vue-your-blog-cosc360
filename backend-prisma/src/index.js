@@ -1,11 +1,11 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const { PrismaClient } = require('@prisma/client');
+const express = require('express')
+const bodyParser = require('body-parser')
+const { PrismaClient } = require('@prisma/client')
 
-const prisma = new PrismaClient();
-const app = express();
+const prisma = new PrismaClient()
+const app = express()
 
-app.use(bodyParser.json());
+app.use(bodyParser.json())
 
 // create user in database and return response
 app.post('/user', async (req, res) => {
@@ -21,13 +21,13 @@ app.post('/user', async (req, res) => {
       // },
       ...req.body,
     },
-  });
-  res.json(result);
-});
+  })
+  res.json(result)
+})
 
 // create post in database and return response
 app.post('/post', async (req, res) => {
-  const { title, content, authorEmail } = req.body;
+  const { title, content, authorEmail } = req.body
   const result = await prisma.post.create({
     data: {
       title,
@@ -35,31 +35,31 @@ app.post('/post', async (req, res) => {
       published: false,
       author: { connect: { email: authorEmail } },
     },
-  });
-  res.json(result);
-});
+  })
+  res.json(result)
+})
 
 // delete a post with given id from slug
 app.delete('/post/:id', async (req, res) => {
-  const { id } = req.params;
+  const { id } = req.params
   const post = await prisma.post.delete({
     where: {
       id: parseInt(id),
     },
-  });
-  res.json(post);
-});
+  })
+  res.json(post)
+})
 
 // return post with a given id from slug
 app.get('/post/:id', async (req, res) => {
-  const { id } = req.params;
+  const { id } = req.params
   const post = await prisma.post.findUnique({
     where: {
       id: parseInt(id),
     },
-  });
-  res.json(post);
-});
+  })
+  res.json(post)
+})
 
 // display users
 // (async function () {
@@ -81,4 +81,4 @@ app.get('/post/:id', async (req, res) => {
 
 app.listen(3000, () =>
   console.log('🚀 Server ready at: http://localhost:3000\n')
-);
+)
