@@ -38,7 +38,6 @@
             accept="image/png, image/jpeg, image/bmp"
             prepend-icon="mdi-camera"
             label="Insert Profile Pic"
-            full-width="false"
             chips
           ></v-file-input>
           <v-checkbox
@@ -50,12 +49,24 @@
             @blur="$v.checkbox.$touch()"
           ></v-checkbox>
 
-          <v-btn class="mr-4" @click="submit">
+          <v-btn
+            class="mr-4"
+            @click="submit"
+            :disabled="submitStatus === 'PENDING'"
+          >
             submit
           </v-btn>
           <v-btn @click="clear">
             clear
           </v-btn>
+          <div class="mt-5"></div>
+          <p class="typo__p" v-if="submitStatus === 'OK'">
+            Thanks for your submission!
+          </p>
+          <p class="typo__p" v-if="submitStatus === 'ERROR'">
+            Please fill the form correctly.
+          </p>
+          <p class="typo__p" v-if="submitStatus === 'PENDING'">Sending...</p>
         </v-form>
       </v-col>
     </v-row>
@@ -65,13 +76,14 @@
 <script>
 import { validationMixin } from 'vuelidate'
 import { required, maxLength, minLength, email } from 'vuelidate/lib/validators'
+import EventService from '@/services/EventService'
 
 export default {
   mixins: [validationMixin],
 
   validations: {
-    username: { required, maxLength: maxLength(14), minLength: minLength(5) },
-    password: { required, maxLength: maxLength(14), minLength: minLength(5) },
+    username: { required, maxLength: maxLength(14), minLength: minLength(4) },
+    password: { required, maxLength: maxLength(14), minLength: minLength(4) },
     email: { required, email },
     image: { required },
     checkbox: {
@@ -87,8 +99,9 @@ export default {
     email: '',
     image: null,
     checkbox: false,
-    minCharCount: 5,
+    minCharCount: 4,
     maxCharCount: 14,
+    submitStatus: null,
     imageRules: [
       value =>
         !value ||
@@ -150,6 +163,16 @@ export default {
   methods: {
     submit() {
       this.$v.$touch()
+      if (this.$v.$invalid) {
+        this.submitStatus = 'ERROR'
+      } else {
+        // do your submit logic here
+        this.submitStatus = 'PENDING'
+        EventService.createUser().then(response => {
+          console.log(response.data)
+          this.submitStatus = 'OK'
+        })
+      }
     },
     clear() {
       this.$v.$reset()
