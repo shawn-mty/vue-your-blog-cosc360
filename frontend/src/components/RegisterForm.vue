@@ -6,7 +6,7 @@
           <v-text-field
             v-model="username"
             :error-messages="usernameErrors"
-            :counter="charCount"
+            :counter="maxCharCount"
             label="Username"
             required
             @input="$v.username.$touch()"
@@ -15,7 +15,9 @@
           <v-text-field
             v-model="password"
             :error-messages="passwordErrors"
+            :counter="maxCharCount"
             label="Password"
+            type="password"
             required
             @input="$v.password.$touch()"
             @blur="$v.password.$touch()"
@@ -29,11 +31,15 @@
             @blur="$v.email.$touch()"
           ></v-text-field>
           <v-file-input
+            v-model="image"
             :rules="imageRules"
+            :error-messages="imageErrors"
+            placeholder="Insert Profile Pic"
             accept="image/png, image/jpeg, image/bmp"
-            placeholder="Pick an avatar"
             prepend-icon="mdi-camera"
-            label="Avatar"
+            label="Insert Profile Pic"
+            full-width="false"
+            chips
           ></v-file-input>
           <v-checkbox
             v-model="checkbox"
@@ -58,15 +64,16 @@
 
 <script>
 import { validationMixin } from 'vuelidate'
-import { required, maxLength, email } from 'vuelidate/lib/validators'
+import { required, maxLength, minLength, email } from 'vuelidate/lib/validators'
 
 export default {
   mixins: [validationMixin],
 
   validations: {
-    username: { required, maxLength: maxLength(14) },
-    password: { required, maxLength: maxLength(14) },
+    username: { required, maxLength: maxLength(14), minLength: minLength(5) },
+    password: { required, maxLength: maxLength(14), minLength: minLength(5) },
     email: { required, email },
+    image: { required },
     checkbox: {
       checked(val) {
         return val
@@ -78,9 +85,10 @@ export default {
     username: '',
     password: '',
     email: '',
-    select: null,
+    image: null,
     checkbox: false,
-    charCount: 14,
+    minCharCount: 5,
+    maxCharCount: 14,
     imageRules: [
       value =>
         !value ||
@@ -101,7 +109,11 @@ export default {
       if (!this.$v.username.$dirty) return errors
       !this.$v.username.maxLength &&
         errors.push(
-          'Username must be at most ' + this.charCount + ' characters long'
+          'Username must be at most ' + this.maxCharCount + ' characters long'
+        )
+      !this.$v.username.minLength &&
+        errors.push(
+          'Username must be at least ' + this.minCharCount + ' characters long'
         )
       !this.$v.username.required && errors.push('Username is required.')
       return errors
@@ -111,7 +123,11 @@ export default {
       if (!this.$v.password.$dirty) return errors
       !this.$v.password.maxLength &&
         errors.push(
-          'Password must be at most ' + this.charCount + ' characters long'
+          'Password must be at most ' + this.maxCharCount + ' characters long'
+        )
+      !this.$v.password.minLength &&
+        errors.push(
+          'Password must be at least ' + this.minCharCount + ' characters long'
         )
       !this.$v.password.required && errors.push('Password is required.')
       return errors
@@ -123,6 +139,12 @@ export default {
       !this.$v.email.required && errors.push('E-mail is required')
       return errors
     },
+    imageErrors() {
+      const errors = []
+      if (!this.$v.image.$dirty) return errors
+      !this.$v.image.required && errors.push('Profile Pic is required')
+      return errors
+    },
   },
 
   methods: {
@@ -131,9 +153,9 @@ export default {
     },
     clear() {
       this.$v.$reset()
-      this.name = ''
+      this.username = ''
+      this.password = ''
       this.email = ''
-      this.select = null
       this.checkbox = false
     },
   },
