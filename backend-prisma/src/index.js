@@ -1,24 +1,18 @@
 const express = require('express')
 const bodyParser = require('body-parser')
+const cors = require('cors')
 const { PrismaClient } = require('@prisma/client')
 
 const prisma = new PrismaClient()
 const app = express()
 
+app.use(cors())
 app.use(bodyParser.json())
 
 // create user in database and return response
 app.post('/user', async (req, res) => {
   const result = await prisma.user.create({
     data: {
-      // name: 'Alice',
-      // email: 'alice@prisma.io',
-      // posts: {
-      //   create: { title: 'Hello World' },
-      // },
-      // profile: {
-      //   create: { bio: 'I like turtles' },
-      // },
       ...req.body,
     },
   })

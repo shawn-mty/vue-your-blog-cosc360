@@ -27,9 +27,12 @@ model profile {
 }
 
 model user {
-  id      Int      @id @default(autoincrement())
-  name    String?  @db.VarChar(255)
-  email   String   @unique @db.VarChar(255)
-  post    post[]
-  profile profile?
+  id       Int      @id @default(autoincrement())
+  name     String?  @db.VarChar(255)
+  email    String   @unique @db.VarChar(255)
+  username String?  @db.VarChar(14)
+  password String?  @db.VarChar(255)
+  image    String?  @db.VarChar(1020)
+  post     post[]
+  profile  profile?
 }

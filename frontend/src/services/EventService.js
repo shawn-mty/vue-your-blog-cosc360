@@ -6,6 +6,7 @@ const apiClient = axios.create({
   headers: {
     Accept: 'application/json',
     'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': '*',
   },
 })
 
@@ -16,7 +17,7 @@ export default {
   getEvent(id) {
     return apiClient.get('/events/' + id)
   },
-  createUser() {
-    return apiClient.post('/user')
+  createUser(userData) {
+    return apiClient.post('/user', userData)
   },
 }

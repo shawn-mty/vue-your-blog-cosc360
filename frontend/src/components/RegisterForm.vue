@@ -2,6 +2,7 @@
   <v-container>
     <v-row>
       <v-col class="justify-center w-50">
+        <h1>Register</h1>
         <v-form>
           <v-text-field
             v-model="username"
@@ -50,7 +51,7 @@
           ></v-checkbox>
 
           <v-btn
-            class="mr-4"
+            class="mr-4 primary"
             @click="submit"
             :disabled="submitStatus === 'PENDING'"
           >
@@ -168,8 +169,12 @@ export default {
       } else {
         // do your submit logic here
         this.submitStatus = 'PENDING'
-        EventService.createUser().then(response => {
-          console.log(response.data)
+        EventService.createUser({
+          username: this.username,
+          password: this.password,
+          email: this.email,
+        }).then(response => {
+          console.log(response)
           this.submitStatus = 'OK'
         })
       }
