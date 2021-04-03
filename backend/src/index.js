@@ -7,13 +7,13 @@ const bcrypt = require('bcrypt')
 const saltRounds = 10
 
 // check if passwords match
-console.log(
-  'these passwords match? ' +
-    bcrypt.compareSync(
-      'abcd',
-      '$2b$10$YBMBm2eSy2UXNSP17JSD7ur76I4BtjPnAra7UNuUo1ScWMvfOTCUS'
-    )
-)
+// console.log(
+//   'these passwords match? ' +
+//     bcrypt.compareSync(
+//       'abcd',
+//       '$2b$10$YBMBm2eSy2UXNSP17JSD7ur76I4BtjPnAra7UNuUo1ScWMvfOTCUS'
+//     )
+// )
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {

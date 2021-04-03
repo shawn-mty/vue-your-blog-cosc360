@@ -175,10 +175,14 @@ export default {
       } else {
         // do your submit logic here
         this.submitStatus = 'PENDING'
-        EventService.createUser(bodyFormData).then(response => {
-          console.log(response)
-          this.submitStatus = 'OK'
-        })
+        EventService.createUser(bodyFormData)
+          .then(response => {
+            console.log(response)
+            this.submitStatus = 'OK'
+          })
+          .then(() => {
+            this.$router.push('/')
+          })
       }
     },
     clear() {
