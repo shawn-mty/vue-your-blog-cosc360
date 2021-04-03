@@ -6,12 +6,12 @@ const multer = require('multer')
 const bcrypt = require('bcrypt')
 const saltRounds = 10
 
-// check if passwords match
+// // check if passwords match
 // console.log(
 //   'these passwords match? ' +
 //     bcrypt.compareSync(
-//       'abcd',
-//       '$2b$10$YBMBm2eSy2UXNSP17JSD7ur76I4BtjPnAra7UNuUo1ScWMvfOTCUS'
+//       'u78987u',
+//       '$2b$10$pMATEIQpXR7M12ItstRTMuEbUw3Ehluix2gW3LXoqBz8.JGrTkeXq'
 //     )
 // )
 

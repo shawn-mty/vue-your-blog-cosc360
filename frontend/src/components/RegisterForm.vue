@@ -145,6 +145,10 @@ export default {
           'Password must be at least ' + this.minCharCount + ' characters long'
         )
       !this.$v.password.required && errors.push('Password is required.')
+
+      if (this.password.includes(this.username))
+        errors.push('Username must not include password')
+
       return errors
     },
     emailErrors() {
