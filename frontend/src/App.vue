@@ -39,30 +39,7 @@
 
     <v-main class="grey lighten-3">
       <router-view />
-     <!-- <v-container>
-        <v-row>
-          <v-col cols="2">
-
-            <v-sheet
-              min-height="70vh"
-              rounded="lg"
-            >
-
-            </v-sheet>
-
-          </v-col>
-
-          <v-col>
-            <v-sheet
-              min-height="70vh"
-              rounded="lg"
-            >
-
-            </v-sheet>
-          </v-col>
-        </v-row>
-      </v-container>
-    -->
+    
     </v-main>
   </v-app>
 </template>
