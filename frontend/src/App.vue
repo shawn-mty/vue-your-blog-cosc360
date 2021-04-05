@@ -38,6 +38,7 @@ export default {
     links: [
       { path: '/', name: 'Home' },
       { path: '/register', name: 'Register' },
+      { path: '/make-a-blog', name: 'Make a Blog' },
     ],
   }),
 }
