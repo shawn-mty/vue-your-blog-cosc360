@@ -3,7 +3,6 @@
     <v-row>
       <v-col class="justify-center w-50">
         <h1>Make a Blog</h1>
-
         <v-form>
           <v-text-field
             v-model="title"
@@ -14,42 +13,55 @@
             @input="$v.title.$touch()"
             @blur="$v.title.$touch()"
           ></v-text-field>
-          <v-text-field
-            v-model="password"
-            :error-messages="passwordErrors"
+          <v-row class="d-flex justify-end my-5 mx-5">
+            <v-speed-dial
+              v-model="fab"
+              direction="left"
+              open-on-hover
+              transition="slide-x-reverse-transition"
+            >
+              <template v-slot:activator>
+                <v-btn v-model="fab" color="blue darken-2" dark fab>
+                  <v-icon v-if="fab">
+                    mdi-close
+                  </v-icon>
+                  <v-icon v-else>
+                    mdi-plus
+                  </v-icon>
+                </v-btn>
+              </template>
+              <v-btn fab dark small color="indigo">
+                <v-icon>mdi-image</v-icon>
+              </v-btn>
+              <v-btn fab dark small color="blue">
+                <v-icon>mdi-text-box</v-icon>
+              </v-btn>
+              <v-btn fab dark small color="green">
+                <v-icon>mdi-subtitles</v-icon>
+              </v-btn>
+            </v-speed-dial>
+          </v-row>
+          <!-- <v-textarea
+            v-model="body"
+            :error-messages="bodyErrors"
             :counter="maxCharCount"
-            label="Password"
-            type="password"
+            label="Body"
+            type="body"
             required
-            @input="$v.password.$touch()"
-            @blur="$v.password.$touch()"
-          ></v-text-field>
-          <v-text-field
-            v-model="email"
-            :error-messages="emailErrors"
-            label="E-mail"
-            required
-            @input="$v.email.$touch()"
-            @blur="$v.email.$touch()"
-          ></v-text-field>
-          <v-file-input
+            @input="$v.body.$touch()"
+            @blur="$v.body.$touch()"
+          ></v-textarea> -->
+
+          <!-- <v-file-input
             v-model="image"
             :rules="imageRules"
             :error-messages="imageErrors"
-            placeholder="Insert Profile Pic"
+            placeholder="Insert Pic"
             accept="image/png, image/jpeg, image/bmp"
             prepend-icon="mdi-camera"
             label="Insert Profile Pic"
             chips
-          ></v-file-input>
-          <v-checkbox
-            v-model="checkbox"
-            :error-messages="checkboxErrors"
-            label="Do you agree to let us do whatever we want with your data?"
-            required
-            @change="$v.checkbox.$touch()"
-            @blur="$v.checkbox.$touch()"
-          ></v-checkbox>
+          ></v-file-input> -->
 
           <v-btn
             class="mr-4 primary"
@@ -77,30 +89,22 @@
 
 <script>
 import { validationMixin } from 'vuelidate'
-import { required, maxLength, minLength, email } from 'vuelidate/lib/validators'
+import { required, maxLength, minLength } from 'vuelidate/lib/validators'
 import EventService from '@/services/EventService'
+// import the component and the necessary extensions
 
 export default {
   mixins: [validationMixin],
-
   validations: {
     title: { required, maxLength: maxLength(14), minLength: minLength(4) },
-    password: { required, maxLength: maxLength(14), minLength: minLength(4) },
-    email: { required, email },
+    body: { required, maxLength: maxLength(2096), minLength: minLength(255) },
     image: { required },
-    checkbox: {
-      checked(val) {
-        return val
-      },
-    },
   },
 
   data: () => ({
     title: '',
-    password: '',
-    email: '',
+    body: '',
     image: null,
-    checkbox: false,
     minCharCount: 4,
     maxCharCount: 14,
     submitStatus: null,
@@ -110,15 +114,26 @@ export default {
         value.size < 4000000 ||
         'Avatar size should be less than 4 MB!',
     ],
+    direction: 'top',
+    fab: false,
+    fling: false,
+    tabs: null,
   }),
 
   computed: {
-    checkboxErrors() {
-      const errors = []
-      if (!this.$v.checkbox.$dirty) return errors
-      !this.$v.checkbox.checked && errors.push('You must agree to continue!')
-      return errors
+    activeFab() {
+      switch (this.tabs) {
+        case 'one':
+          return { class: 'purple', icon: 'account_circle' }
+        case 'two':
+          return { class: 'red', icon: 'edit' }
+        case 'three':
+          return { class: 'green', icon: 'keyboard_arrow_up' }
+        default:
+          return {}
+      }
     },
+
     usernameErrors() {
       const errors = []
       if (!this.$v.title.$dirty) return errors
@@ -135,27 +150,20 @@ export default {
     },
     passwordErrors() {
       const errors = []
-      if (!this.$v.password.$dirty) return errors
-      !this.$v.password.maxLength &&
+      if (!this.$v.body.$dirty) return errors
+      !this.$v.body.maxLength &&
         errors.push(
-          'Password must be at most ' + this.maxCharCount + ' characters long'
+          'Body must be at most ' + this.maxCharCount + ' characters long'
         )
-      !this.$v.password.minLength &&
+      !this.$v.body.minLength &&
         errors.push(
-          'Password must be at least ' + this.minCharCount + ' characters long'
+          'Body must be at least ' + this.minCharCount + ' characters long'
         )
-      !this.$v.password.required && errors.push('Password is required.')
+      !this.$v.body.required && errors.push('Body is required.')
 
-      if (this.password.includes(this.title))
-        errors.push('Title must not include password')
+      if (this.body.includes(this.title))
+        errors.push('Title must not include body')
 
-      return errors
-    },
-    emailErrors() {
-      const errors = []
-      if (!this.$v.email.$dirty) return errors
-      !this.$v.email.email && errors.push('Must be valid e-mail')
-      !this.$v.email.required && errors.push('E-mail is required')
       return errors
     },
     imageErrors() {
@@ -170,8 +178,7 @@ export default {
     submit() {
       var bodyFormData = new FormData()
       bodyFormData.append('title', this.title)
-      bodyFormData.append('password', this.password)
-      bodyFormData.append('email', this.email)
+      bodyFormData.append('body', this.body)
       bodyFormData.append('image', this.image)
       this.$v.$touch()
       if (this.$v.$invalid) {
@@ -192,9 +199,22 @@ export default {
     clear() {
       this.$v.$reset()
       this.title = ''
-      this.password = ''
-      this.email = ''
+      this.body = ''
       this.checkbox = false
+    },
+  },
+  watch: {
+    top(val) {
+      this.bottom = !val
+    },
+    right(val) {
+      this.left = !val
+    },
+    bottom(val) {
+      this.top = !val
+    },
+    left(val) {
+      this.right = !val
     },
   },
 }
