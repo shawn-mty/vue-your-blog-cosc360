@@ -16,7 +16,7 @@
       <v-row justify="center" no-gutters>
         <v-btn
           v-for="link in links"
-          :key="link"
+          :key="link.index"
           color="white"
           text
           rounded
