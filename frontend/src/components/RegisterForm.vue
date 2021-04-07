@@ -3,6 +3,7 @@
     <v-row>
       <v-col class="justify-center w-50">
         <h1>Register</h1>
+
         <v-form>
           <v-text-field
             v-model="username"
@@ -144,6 +145,10 @@ export default {
           'Password must be at least ' + this.minCharCount + ' characters long'
         )
       !this.$v.password.required && errors.push('Password is required.')
+
+      if (this.password.includes(this.username))
+        errors.push('Username must not include password')
+
       return errors
     },
     emailErrors() {
@@ -163,20 +168,25 @@ export default {
 
   methods: {
     submit() {
+      var bodyFormData = new FormData()
+      bodyFormData.append('username', this.username)
+      bodyFormData.append('password', this.password)
+      bodyFormData.append('email', this.email)
+      bodyFormData.append('image', this.image)
       this.$v.$touch()
       if (this.$v.$invalid) {
         this.submitStatus = 'ERROR'
       } else {
         // do your submit logic here
         this.submitStatus = 'PENDING'
-        EventService.createUser({
-          username: this.username,
-          password: this.password,
-          email: this.email,
-        }).then(response => {
-          console.log(response)
-          this.submitStatus = 'OK'
-        })
+        EventService.createUser(bodyFormData)
+          .then(response => {
+            console.log(response)
+            this.submitStatus = 'OK'
+          })
+          .then(() => {
+            this.$router.push('/')
+          })
       }
     },
     clear() {
