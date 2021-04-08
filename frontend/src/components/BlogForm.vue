@@ -15,17 +15,24 @@
           >
           </v-text-field>
           <div v-for="blogElement in blogElements" :key="blogElement.id">
-            <v-row class="d-flex align-center mx-1 my-1">
+            <v-row class="d-flex align-center mx-1 mt-1 mb-0">
               <tiptap-vuetify
                 class="d-flex mr-auto"
                 style="width: 85%; min-width:85%; max-width:95%; flex: 1 1 auto; "
                 :card-props="{ width: '98%' }"
                 v-if="blogElement.type == 'textArea'"
                 v-model="blogElement.content"
+                @blur="
+                  blogElement.content.length < 15 &&
+                  blogElement.content.includes('<')
+                    ? (blogElement.content = null)
+                    : true
+                "
                 :extensions="extensions"
                 placeholder="Write your blog"
                 required
               />
+
               <v-file-input
                 v-if="blogElement.type === 'image'"
                 v-model="blogElement.content"
@@ -51,6 +58,21 @@
                   mdi-close
                 </v-icon>
               </v-btn>
+            </v-row>
+            <v-row
+              v-if="blogElement.type === 'textArea'"
+              class="d-flex align-center mx-1 mt-0 mb-0"
+            >
+              <v-text-field
+                class="d-flex mr-auto pt-0 mt-0"
+                hidden
+                style=" min-width:85%; max-width:93%; flex: 1 1 auto; "
+                v-model="blogElement.content"
+                :error-messages="textAreaErrors(blogElement.id)"
+              />
+              <v-spacer class="d-lg-none d-xl-none d-md-none d-sm-none" />
+              <v-spacer class="d-lg-none d-xl-none d-md-none d-sm-none" />
+              <v-spacer class="d-lg-none d-xl-none d-md-none d-sm-none" />
             </v-row>
           </div>
           <v-row class="d-flex justify-end my-6 mx-1">
@@ -145,19 +167,15 @@ export default {
       $each: {
         content: {
           required,
-          maxLength: maxLength(128),
-          minLength: minLength(4),
         },
       },
     },
-    image: { required },
   },
   components: { TiptapVuetify },
   data: () => ({
     title: '',
     uniqueId: -1,
     blogElements: [],
-    image: null,
     minCharCount: 4,
     maxCharCount: 14,
     submitStatus: null,
@@ -219,7 +237,18 @@ export default {
         id: this.uniqueId,
       })
     },
+    textAreaErrors(blogElementId) {
+      let blogElementIndex = this.blogElements.findIndex(blogElement => {
+        return blogElement.id === blogElementId
+      })
+      const errors = []
+      if (!this.$v.blogElements.$each[blogElementIndex].content.$dirty)
+        return errors
 
+      !this.$v.blogElements.$each[blogElementIndex].content.required &&
+        errors.push('TextArea is required.')
+      return errors
+    },
     imageErrors(blogElementId) {
       let blogElementIndex = this.blogElements.findIndex(blogElement => {
         return blogElement.id === blogElementId
@@ -251,6 +280,7 @@ export default {
         )
       })
       this.$v.$touch()
+
       if (this.$v.$invalid) {
         this.submitStatus = 'ERROR'
       } else {
