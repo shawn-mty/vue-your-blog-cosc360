@@ -37,7 +37,7 @@
                 label="Insert Pic"
                 chips
               />
-              <v-spacer />
+              <v-spacer class="d-lg-none d-xl-none d-md-none d-sm-none" />
               <v-btn
                 @click="removeBlogElement(blogElement.id)"
                 color="red"
