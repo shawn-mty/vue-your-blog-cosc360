@@ -50,7 +50,7 @@
 
 <script>
 import { validationMixin } from 'vuelidate'
-import { required, maxLength, minLength, email } from 'vuelidate/lib/validators'
+import { required, maxLength, minLength} from 'vuelidate/lib/validators'
 import EventService from '@/services/EventService'
 
 export default {
@@ -59,13 +59,6 @@ export default {
   validations: {
     username: { required, maxLength: maxLength(14), minLength: minLength(4) },
     password: { required, maxLength: maxLength(14), minLength: minLength(4) },
-    email: { required, email },
-    image: { required },
-    checkbox: {
-      checked(val) {
-        return val
-      },
-    },
   },
 
   data: () => ({
@@ -74,12 +67,6 @@ export default {
     minCharCount: 4,
     maxCharCount: 14,
     submitStatus: null,
-    imageRules: [
-      value =>
-        !value ||
-        value.size < 4000000 ||
-        'Avatar size should be less than 4 MB!',
-    ],
   }),
 
   computed: {
@@ -122,8 +109,6 @@ export default {
       var bodyFormData = new FormData()
       bodyFormData.append('username', this.username)
       bodyFormData.append('password', this.password)
-      bodyFormData.append('email', this.email)
-      bodyFormData.append('image', this.image)
       this.$v.$touch()
       if (this.$v.$invalid) {
         this.submitStatus = 'ERROR'
@@ -144,8 +129,6 @@ export default {
       this.$v.$reset()
       this.username = ''
       this.password = ''
-      this.email = ''
-      this.checkbox = false
     },
   },
 }
