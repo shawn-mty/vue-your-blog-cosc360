@@ -29,6 +29,8 @@
               <v-file-input
                 v-if="blogElement.type === 'image'"
                 v-model="blogElement.content"
+                class="d-flex mr-auto"
+                style=" max-width:93%;"
                 :rules="imageRules"
                 :error-messages="imageErrors(blogElement.id)"
                 placeholder="Insert Pic"
