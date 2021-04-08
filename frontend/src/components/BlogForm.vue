@@ -118,7 +118,7 @@
 <script>
 import { validationMixin } from 'vuelidate'
 import { required, maxLength, minLength } from 'vuelidate/lib/validators'
-// import EventService from '@/services/EventService'
+import EventService from '@/services/EventService'
 import {
   TiptapVuetify,
   Heading,
@@ -150,23 +150,16 @@ export default {
         },
       },
     },
-    textArea: {
-      required,
-      maxLength: maxLength(2096),
-      minLength: minLength(255),
-    },
     image: { required },
   },
   components: { TiptapVuetify },
   data: () => ({
     title: '',
-    textArea: '',
     uniqueId: -1,
     blogElements: [],
     image: null,
     minCharCount: 4,
     maxCharCount: 14,
-    maxTextAreaCharCount: 4096,
     submitStatus: null,
     imageRules: [
       value =>
@@ -227,28 +220,6 @@ export default {
       })
     },
 
-    textAreaErrors(blogElementId) {
-      let blogElementIndex = this.blogElements.findIndex(blogElement => {
-        return blogElement.id === blogElementId
-      })
-      const errors = []
-      if (!this.$v.blogElements.$each[blogElementIndex].content.$dirty)
-        return errors
-      !this.$v.blogElements.$each[blogElementIndex].content.maxLength &&
-        errors.push(
-          'Text Area must be at most ' +
-            this.maxTextAreaCharCount +
-            ' characters long'
-        )
-      !this.$v.blogElements.$each[blogElementIndex].content.minLength &&
-        errors.push(
-          'Text Area must be at least ' + this.minCharCount + ' characters long'
-        )
-      !this.$v.blogElements.$each[blogElementIndex].content.required &&
-        errors.push('TextArea is required.')
-      return errors
-    },
-
     imageErrors(blogElementId) {
       let blogElementIndex = this.blogElements.findIndex(blogElement => {
         return blogElement.id === blogElementId
@@ -271,30 +242,36 @@ export default {
       this.blogElements.splice(blogElementIndex, 1)
     },
     submit() {
-      // var bodyFormData = new FormData()
-      // bodyFormData.append('title', this.title)
-      // bodyFormData.append('body', this.body)
-      // bodyFormData.append('image', this.image)
+      let bodyFormData = new FormData()
+      bodyFormData.append('title', this.title)
+      this.blogElements.forEach((blogElement, blogElementindex) => {
+        bodyFormData.append(
+          blogElement.type + '-blog-element-' + blogElementindex,
+          blogElement.content
+        )
+      })
       this.$v.$touch()
-      // if (this.$v.$invalid) {
-      //   this.submitStatus = 'ERROR'
-      // } else {
-      //   // do your submit logic here
-      //   this.submitStatus = 'PENDING'
-      //   EventService.createUser(bodyFormData)
-      //     .then(response => {
-      //       console.log(response)
-      //       this.submitStatus = 'OK'
-      //     })
-      //     .then(() => {
-      //       this.$router.push('/')
-      //     })
-      // }
+      if (this.$v.$invalid) {
+        this.submitStatus = 'ERROR'
+      } else {
+        // do your submit logic here
+        this.submitStatus = 'PENDING'
+        EventService.createBlog(bodyFormData)
+          .then(response => {
+            console.log(response)
+            this.submitStatus = 'OK'
+          })
+          .then(() => {
+            this.$router.push('/')
+          })
+      }
     },
     clear() {
       this.$v.$reset()
       this.title = ''
-      this.body = ''
+      this.blogElements.forEach(blogElement => {
+        blogElement.content = null
+      })
     },
   },
 }

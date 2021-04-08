@@ -20,4 +20,7 @@ export default {
   createUser(userData) {
     return apiClient.post('/user', userData)
   },
+  createBlog(blogData) {
+    return apiClient.post('/blog', blogData)
+  },
 }
