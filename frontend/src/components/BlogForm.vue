@@ -28,17 +28,20 @@
                 @blur="$v.blogElements.$touch()"
               >
               </v-text-field>
-              <v-textarea
+              <tiptap-vuetify
+                class="d-flex mr-auto"
+                style="width: 85%; min-width:85%; max-width:95%; flex: 1 1 auto; "
+                :card-props="{ width: '98%' }"
                 v-if="blogElement.type == 'textArea'"
                 v-model="blogElement.content"
-                :error-messages="textAreaErrors(blogElement.id)"
                 :counter="maxTextAreaCharCount"
-                label="Text Area"
-                type="body"
+                :extensions="extensions"
+                :error-messages="textAreaErrors(blogElement.id)"
+                placeholder="Write your blog"
                 required
                 @input="$v.textArea.$touch()"
                 @blur="$v.textArea.$touch()"
-              ></v-textarea>
+              />
               <v-file-input
                 v-if="blogElement.type === 'image'"
                 v-model="blogElement.content"
@@ -50,6 +53,7 @@
                 label="Insert Profile Pic"
                 chips
               />
+
               <v-btn
                 @click="removeBlogElement(blogElement.id)"
                 color="red"
@@ -138,7 +142,24 @@
 import { validationMixin } from 'vuelidate'
 import { required, maxLength, minLength } from 'vuelidate/lib/validators'
 // import EventService from '@/services/EventService'
-// import the component and the necessary extensions
+import {
+  TiptapVuetify,
+  Heading,
+  Bold,
+  Italic,
+  Strike,
+  Underline,
+  Code,
+  Paragraph,
+  BulletList,
+  OrderedList,
+  ListItem,
+  Link,
+  Blockquote,
+  HardBreak,
+  HorizontalRule,
+  History,
+} from 'tiptap-vuetify'
 
 export default {
   mixins: [validationMixin],
@@ -160,7 +181,7 @@ export default {
     },
     image: { required },
   },
-
+  components: { TiptapVuetify },
   data: () => ({
     title: '',
     textArea: '',
@@ -179,6 +200,30 @@ export default {
         'Avatar size should be less than 4 MB!',
     ],
     fab: false,
+    extensions: [
+      History,
+      Blockquote,
+      Link,
+      Underline,
+      Strike,
+      Italic,
+      ListItem,
+      BulletList,
+      OrderedList,
+      [
+        Heading,
+        {
+          options: {
+            levels: [1, 2, 3],
+          },
+        },
+      ],
+      Bold,
+      Code,
+      HorizontalRule,
+      Paragraph,
+      HardBreak,
+    ],
   }),
 
   computed: {
@@ -203,7 +248,7 @@ export default {
       this.uniqueId++
       this.blogElements.push({
         type: blogElementType,
-        content: null,
+        content: '',
         id: this.uniqueId,
       })
     },
