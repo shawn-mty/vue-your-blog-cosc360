@@ -32,16 +32,21 @@
             @input="$v.email.$touch()"
             @blur="$v.email.$touch()"
           ></v-text-field>
-          <v-file-input
-            v-model="image"
-            :rules="imageRules"
-            :error-messages="imageErrors"
-            placeholder="Insert Profile Pic"
-            accept="image/png, image/jpeg, image/bmp"
-            prepend-icon="mdi-camera"
-            label="Insert Profile Pic"
-            chips
-          ></v-file-input>
+          <v-row>
+            <v-file-input
+              class="mt-3 ml-2"
+              v-model="image"
+              :rules="imageRules"
+              :error-messages="imageErrors"
+              placeholder="Insert Profile Pic"
+              accept="image/png, image/jpeg, image/bmp"
+              prepend-icon="mdi-camera"
+              label="Insert Profile Pic"
+              chips
+            ></v-file-input>
+            <v-spacer />
+          </v-row>
+
           <v-checkbox
             v-model="checkbox"
             :error-messages="checkboxErrors"

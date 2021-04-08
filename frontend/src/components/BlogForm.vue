@@ -26,7 +26,6 @@
                 placeholder="Write your blog"
                 required
               />
-
               <v-file-input
                 v-if="blogElement.type === 'image'"
                 v-model="blogElement.content"
@@ -38,6 +37,7 @@
                 label="Insert Pic"
                 chips
               />
+              <v-spacer />
               <v-btn
                 @click="removeBlogElement(blogElement.id)"
                 color="red"
