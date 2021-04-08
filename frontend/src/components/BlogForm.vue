@@ -16,32 +16,17 @@
           </v-text-field>
           <div v-for="blogElement in blogElements" :key="blogElement.id">
             <v-row class="d-flex align-center mx-1 my-1">
-              <v-text-field
-                class="mr-2"
-                v-if="blogElement.type == 'header'"
-                v-model="blogElement.content"
-                :error-messages="headerErrors(blogElement.id)"
-                :counter="maxHeaderCharCount"
-                label="Header"
-                required
-                @input="$v.blogElements.$touch()"
-                @blur="$v.blogElements.$touch()"
-              >
-              </v-text-field>
               <tiptap-vuetify
                 class="d-flex mr-auto"
                 style="width: 85%; min-width:85%; max-width:95%; flex: 1 1 auto; "
                 :card-props="{ width: '98%' }"
                 v-if="blogElement.type == 'textArea'"
                 v-model="blogElement.content"
-                :counter="maxTextAreaCharCount"
                 :extensions="extensions"
-                :error-messages="textAreaErrors(blogElement.id)"
                 placeholder="Write your blog"
                 required
-                @input="$v.textArea.$touch()"
-                @blur="$v.textArea.$touch()"
               />
+
               <v-file-input
                 v-if="blogElement.type === 'image'"
                 v-model="blogElement.content"
@@ -50,10 +35,9 @@
                 placeholder="Insert Pic"
                 accept="image/png, image/jpeg, image/bmp"
                 prepend-icon="mdi-camera"
-                label="Insert Profile Pic"
+                label="Insert Pic"
                 chips
               />
-
               <v-btn
                 @click="removeBlogElement(blogElement.id)"
                 color="red"
@@ -102,15 +86,6 @@
               >
                 <v-icon>mdi-text-box</v-icon>
               </v-btn>
-              <v-btn
-                @click="addBlogElement('header')"
-                fab
-                dark
-                small
-                color="indigo"
-              >
-                <v-icon>mdi-subtitles</v-icon>
-              </v-btn>
             </v-speed-dial>
           </v-row>
 
@@ -157,7 +132,6 @@ import {
   Link,
   Blockquote,
   HardBreak,
-  HorizontalRule,
   History,
 } from 'tiptap-vuetify'
 
@@ -190,7 +164,6 @@ export default {
     image: null,
     minCharCount: 4,
     maxCharCount: 14,
-    maxHeaderCharCount: 128,
     maxTextAreaCharCount: 4096,
     submitStatus: null,
     imageRules: [
@@ -220,7 +193,6 @@ export default {
       ],
       Bold,
       Code,
-      HorizontalRule,
       Paragraph,
       HardBreak,
     ],
@@ -248,31 +220,11 @@ export default {
       this.uniqueId++
       this.blogElements.push({
         type: blogElementType,
-        content: '',
+        content: null,
         id: this.uniqueId,
       })
     },
-    headerErrors(blogElementId) {
-      let blogElementIndex = this.blogElements.findIndex(blogElement => {
-        return blogElement.id === blogElementId
-      })
-      const errors = []
-      if (!this.$v.blogElements.$each[blogElementIndex].content.$dirty)
-        return errors
-      !this.$v.blogElements.$each[blogElementIndex].content.maxLength &&
-        errors.push(
-          'Header must be at most ' +
-            this.maxHeaderCharCount +
-            ' characters long'
-        )
-      !this.$v.blogElements.$each[blogElementIndex].content.minLength &&
-        errors.push(
-          'Header must be at least ' + this.minCharCount + ' characters long'
-        )
-      !this.$v.blogElements.$each[blogElementIndex].content.required &&
-        errors.push('Header is required.')
-      return errors
-    },
+
     textAreaErrors(blogElementId) {
       let blogElementIndex = this.blogElements.findIndex(blogElement => {
         return blogElement.id === blogElementId
@@ -299,11 +251,14 @@ export default {
       let blogElementIndex = this.blogElements.findIndex(blogElement => {
         return blogElement.id === blogElementId
       })
+
       const errors = []
       if (!this.$v.blogElements.$each[blogElementIndex].content.$dirty)
         return errors
+
       !this.$v.blogElements.$each[blogElementIndex].content.required &&
-        errors.push('Profile Pic is required.')
+        errors.push('Pic is required.')
+
       return errors
     },
     removeBlogElement(blogElementId) {
@@ -318,7 +273,7 @@ export default {
       // bodyFormData.append('title', this.title)
       // bodyFormData.append('body', this.body)
       // bodyFormData.append('image', this.image)
-      // this.$v.$touch()
+      this.$v.$touch()
       // if (this.$v.$invalid) {
       //   this.submitStatus = 'ERROR'
       // } else {
