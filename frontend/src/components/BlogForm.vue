@@ -31,7 +31,7 @@
               <v-textarea
                 v-if="blogElement.type == 'textArea'"
                 v-model="blogElement.content"
-                :error-messages="textAreaErrors"
+                :error-messages="textAreaErrors(blogElement.id)"
                 :counter="maxTextAreaCharCount"
                 label="Text Area"
                 type="body"
@@ -43,7 +43,7 @@
                 v-if="blogElement.type === 'image'"
                 v-model="blogElement.content"
                 :rules="imageRules"
-                :error-messages="imageErrors"
+                :error-messages="imageErrors(blogElement.id)"
                 placeholder="Insert Pic"
                 accept="image/png, image/jpeg, image/bmp"
                 prepend-icon="mdi-camera"
@@ -145,7 +145,13 @@ export default {
   validations: {
     title: { required, maxLength: maxLength(14), minLength: minLength(4) },
     blogElements: {
-      $each: { required, maxLength: maxLength(128), minLength: minLength(4) },
+      $each: {
+        content: {
+          required,
+          maxLength: maxLength(128),
+          minLength: minLength(4),
+        },
+      },
     },
     textArea: {
       required,
@@ -158,7 +164,7 @@ export default {
   data: () => ({
     title: '',
     textArea: '',
-    uniqueId: 0,
+    uniqueId: -1,
     blogElements: [],
     image: null,
     minCharCount: 4,
@@ -190,60 +196,70 @@ export default {
       !this.$v.title.required && errors.push('Title is required.')
       return errors
     },
-    headerErrors(blogElementId) {
-      let blogElementIndex = this.blogElements.findIndex(
-        blogElement => blogElement.id === blogElementId
-      )
-      console.log(blogElementIndex)
-      const errors = []
-      if (!this.$v.blogElements.$each[blogElementIndex].$dirty) return errors
-      !this.$v.blogElements.$each[blogElementIndex].maxLength &&
-        errors.push(
-          'Header must be at most ' +
-            this.maxHeaderCharCount +
-            ' characters long'
-        )
-      !this.$v.blogElements.$each[blogElementIndex].minLength &&
-        errors.push(
-          'Header must be at least ' + this.minCharCount + ' characters long'
-        )
-      !this.$v.blogElements.$each[blogElementIndex].required &&
-        errors.push('Header is required.')
-      return errors
-    },
-    textAreaErrors() {
-      const errors = []
-      if (!this.$v.textArea.$dirty) return errors
-      !this.$v.textArea.maxLength &&
-        errors.push(
-          'Text Area must be at most ' +
-            this.maxTextAreaCharCount +
-            ' characters long'
-        )
-      !this.$v.textArea.minLength &&
-        errors.push(
-          'Text Area must be at least ' + this.minCharCount + ' characters long'
-        )
-      !this.$v.textArea.required && errors.push('TextArea is required.')
-      return errors
-    },
-
-    imageErrors() {
-      const errors = []
-      if (!this.$v.image.$dirty) return errors
-      !this.$v.image.required && errors.push('Profile Pic is required.')
-      return errors
-    },
   },
 
   methods: {
     addBlogElement(blogElementType) {
+      this.uniqueId++
       this.blogElements.push({
         type: blogElementType,
         content: null,
         id: this.uniqueId,
       })
-      this.uniqueId++
+    },
+    headerErrors(blogElementId) {
+      let blogElementIndex = this.blogElements.findIndex(blogElement => {
+        return blogElement.id === blogElementId
+      })
+      const errors = []
+      if (!this.$v.blogElements.$each[blogElementIndex].content.$dirty)
+        return errors
+      !this.$v.blogElements.$each[blogElementIndex].content.maxLength &&
+        errors.push(
+          'Header must be at most ' +
+            this.maxHeaderCharCount +
+            ' characters long'
+        )
+      !this.$v.blogElements.$each[blogElementIndex].content.minLength &&
+        errors.push(
+          'Header must be at least ' + this.minCharCount + ' characters long'
+        )
+      !this.$v.blogElements.$each[blogElementIndex].content.required &&
+        errors.push('Header is required.')
+      return errors
+    },
+    textAreaErrors(blogElementId) {
+      let blogElementIndex = this.blogElements.findIndex(blogElement => {
+        return blogElement.id === blogElementId
+      })
+      const errors = []
+      if (!this.$v.blogElements.$each[blogElementIndex].content.$dirty)
+        return errors
+      !this.$v.blogElements.$each[blogElementIndex].content.maxLength &&
+        errors.push(
+          'Text Area must be at most ' +
+            this.maxTextAreaCharCount +
+            ' characters long'
+        )
+      !this.$v.blogElements.$each[blogElementIndex].content.minLength &&
+        errors.push(
+          'Text Area must be at least ' + this.minCharCount + ' characters long'
+        )
+      !this.$v.blogElements.$each[blogElementIndex].content.required &&
+        errors.push('TextArea is required.')
+      return errors
+    },
+
+    imageErrors(blogElementId) {
+      let blogElementIndex = this.blogElements.findIndex(blogElement => {
+        return blogElement.id === blogElementId
+      })
+      const errors = []
+      if (!this.$v.blogElements.$each[blogElementIndex].content.$dirty)
+        return errors
+      !this.$v.blogElements.$each[blogElementIndex].content.required &&
+        errors.push('Profile Pic is required.')
+      return errors
     },
     removeBlogElement(blogElementId) {
       let blogElementIndex = this.blogElements.findIndex(
