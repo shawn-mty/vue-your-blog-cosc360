@@ -115,7 +115,7 @@ export default {
       } else {
         // do your submit logic here
         this.submitStatus = 'PENDING'
-        EventService.createUser(bodyFormData)
+        EventService.fetchUser(bodyFormData)
           .then(response => {
             console.log(response)
             this.submitStatus = 'OK'

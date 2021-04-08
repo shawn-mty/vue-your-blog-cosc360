@@ -20,4 +20,8 @@ export default {
   createUser(userData) {
     return apiClient.post('/user', userData)
   },
+  
+  fetchUser(userData){
+    return apiClient.get("/user", userData)
+  }
 }
