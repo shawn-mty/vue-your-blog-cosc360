@@ -396,7 +396,7 @@ export default {
           .then(response => {
             console.log(response)
             this.submitStatus = 'OK'
-            this.$router.push('blogs/' + response.data.id) // TODO go to dynamic blog pages
+            this.$router.push('blog/' + response.data.id) // TODO go to dynamic blog pages
           })
           .then(() => {})
       }

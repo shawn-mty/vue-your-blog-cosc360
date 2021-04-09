@@ -5,6 +5,7 @@ const { PrismaClient } = require('@prisma/client')
 const multer = require('multer')
 const bcrypt = require('bcrypt')
 const saltRounds = 10
+const serveIndex = require('serve-index')
 
 // // check if passwords match
 // console.log(
@@ -48,6 +49,12 @@ const app = express()
 
 app.use(cors())
 app.use(bodyParser.json())
+const path = require('path')
+app.use(
+  '/uploads',
+  express.static(path.join(__dirname, '..', 'uploads')),
+  serveIndex(path.join(__dirname, '..', 'uploads'))
+)
 
 // create user in database and return response
 app.post('/create-user', upload.single('image'), async (req, res) => {
@@ -82,9 +89,14 @@ app.post('/create-blog', upload.array('images'), async (req, res) => {
     })
   }
 
+  const imagePaths = []
   images.forEach((image, imageIndex) => {
-    dbData['imagePath' + imageIndex] = image.path
+    console.log('image path is ' + image.path)
+    imagePaths.push(image.path)
   })
+  const stringifiedImagePaths = JSON.stringify(imagePaths)
+  console.log(JSON.parse(stringifiedImagePaths))
+  dbData.imagePaths = JSON.stringify(imagePaths)
 
   console.log(dbData)
   const result = await prisma.blog.create({
@@ -105,14 +117,16 @@ app.delete('/post/:id', async (req, res) => {
 })
 
 // return post with a given id from slug
-app.get('/post/:id', async (req, res) => {
+app.get('/blog/:id', async (req, res) => {
   const { id } = req.params
-  const post = await prisma.post.findUnique({
+  const blogData = await prisma.blog.findUnique({
     where: {
       id: parseInt(id),
     },
   })
-  res.json(post)
+  console.log(blogData)
+
+  res.send(blogData)
 })
 
 // display users
