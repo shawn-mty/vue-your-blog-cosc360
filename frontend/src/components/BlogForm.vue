@@ -23,13 +23,14 @@
                 v-if="blogElement.type == 'textArea'"
                 v-model="blogElement.content"
                 @blur="
+                  blogElement.content &&
                   blogElement.content.length < 15 &&
                   blogElement.content.includes('<')
                     ? (blogElement.content = null)
                     : true
                 "
                 :extensions="extensions"
-                placeholder="Write your blog"
+                placeholder="Write a section of your blog here"
                 required
               />
 
@@ -75,7 +76,21 @@
               <v-spacer class="d-lg-none d-xl-none d-md-none d-sm-none" />
             </v-row>
           </div>
-          <v-row class="d-flex justify-end my-6 mx-1">
+          <v-row class="d-flex justify-space-between my-6 mx-1">
+            <p class="error--text" v-if="submitStatus === 'TOOMANYTEXTAREAS'">
+              Max number of Blog Text Sections is 4
+            </p>
+            <p class="error--text" v-if="submitStatus === 'TOOMANYIMAGES'">
+              Max number of Images is 6
+            </p>
+            <p
+              class="error--text"
+              v-if="submitStatus === 'TOOMANYTEXTAREASANDIMAGES'"
+            >
+              Max number of Images is 6 and Max number of Blog Text Sections is
+              4
+            </p>
+            <v-spacer v-else />
             <v-speed-dial
               v-model="fab"
               direction="left"
@@ -167,6 +182,7 @@ export default {
       $each: {
         content: {
           required,
+          maxLength: maxLength(4095),
         },
       },
     },
@@ -178,6 +194,7 @@ export default {
     blogElements: [],
     minCharCount: 4,
     maxCharCount: 14,
+    maxTextAreaCharCount: 4095,
     submitStatus: null,
     imageRules: [
       value =>
@@ -229,7 +246,30 @@ export default {
   },
 
   methods: {
+    disallowTooManyBlogElements(blogElementType) {
+      let imageCount = 0
+      let textAreaCount = 0
+      this.blogElements.forEach(blogElement => {
+        if (blogElement.type === 'textArea') textAreaCount++
+        else if (blogElement.type === 'image') imageCount++
+      })
+
+      if (textAreaCount >= 4 && imageCount >= 6) {
+        this.submitStatus = 'TOOMANYTEXTAREASANDIMAGES'
+        return true
+      } else if (textAreaCount === 4 && blogElementType === 'textArea') {
+        this.submitStatus = 'TOOMANYTEXTAREAS'
+        return true
+      } else if (imageCount >= 6 && blogElementType === 'image') {
+        this.submitStatus = 'TOOMANYIMAGES'
+        return true
+      } else {
+        this.submitStatus = ''
+        return false
+      }
+    },
     addBlogElement(blogElementType) {
+      if (this.disallowTooManyBlogElements(blogElementType)) return
       this.uniqueId++
       this.blogElements.push({
         type: blogElementType,
@@ -244,7 +284,12 @@ export default {
       const errors = []
       if (!this.$v.blogElements.$each[blogElementIndex].content.$dirty)
         return errors
-
+      !this.$v.blogElements.$each[blogElementIndex].content.maxLength &&
+        errors.push(
+          'Blog Section must be at most ' +
+            this.maxTextAreaCharCount +
+            ' characters long'
+        )
       !this.$v.blogElements.$each[blogElementIndex].content.required &&
         errors.push('TextArea is required.')
       return errors
@@ -270,22 +315,21 @@ export default {
 
       this.blogElements.splice(blogElementIndex, 1)
     },
-    submit() {
-      let bodyFormData = new FormData()
-      bodyFormData.append('title', this.title)
-      this.blogElements.forEach((blogElement, blogElementindex) => {
-        bodyFormData.append(
-          blogElement.type + '-blog-element-' + blogElementindex,
-          blogElement.content
-        )
-      })
-      this.$v.$touch()
 
+    submit() {
       if (this.$v.$invalid) {
         this.submitStatus = 'ERROR'
       } else {
         // do your submit logic here
         this.submitStatus = 'PENDING'
+        let bodyFormData = new FormData()
+        bodyFormData.append('title', this.title)
+        this.blogElements.forEach((blogElement, blogElementindex) => {
+          bodyFormData.append(
+            blogElementindex + '-' + blogElement.type,
+            blogElement.content
+          )
+        })
         EventService.createBlog(bodyFormData)
           .then(response => {
             console.log(response)
