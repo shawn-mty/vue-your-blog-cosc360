@@ -219,7 +219,7 @@ import {
 export default {
   mixins: [validationMixin],
   validations: {
-    title: { required, maxLength: maxLength(14), minLength: minLength(4) },
+    title: { required, maxLength: maxLength(127), minLength: minLength(4) },
     blogElements: {
       $each: {
         content: {
@@ -235,7 +235,7 @@ export default {
     uniqueId: -1,
     blogElements: [],
     minCharCount: 4,
-    maxCharCount: 14,
+    maxCharCount: 127,
     maxTextAreaCharCount: 2047,
     submitStatus: null,
     imageRules: [
@@ -379,10 +379,7 @@ export default {
         let blogElementTypesOrder = []
         this.blogElements.forEach(blogElement => {
           if (blogElement.type === 'textArea') {
-            bodyFormData.append(
-              'textAreas',
-              JSON.stringify(blogElement.content)
-            )
+            bodyFormData.append('textAreas', blogElement.content)
             console.log(blogElement.type)
             blogElementTypesOrder.push(blogElement.type)
           } else if (blogElement.type === 'image') {

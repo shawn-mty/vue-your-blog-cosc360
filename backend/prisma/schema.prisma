@@ -27,12 +27,33 @@ model profile {
 }
 
 model user {
-  id        Int      @id @default(autoincrement())
-  name      String?  @db.VarChar(255)
-  email     String   @unique @db.VarChar(255)
-  username  String?  @db.VarChar(14)
-  password  String?  @db.VarChar(255)
-  imagepath String?  @db.VarChar(255)
-  post      post[]
-  profile   profile?
+  id               Int      @id @default(autoincrement())
+  name             String?  @db.VarChar(255)
+  email            String   @unique @db.VarChar(255)
+  username         String   @unique @db.VarChar(14)
+  password         String?  @db.VarChar(255)
+  profileImagePath String?  @db.VarChar(255)
+  blog             blog[]
+  post             post[]
+  profile          profile?
+}
+
+model blog {
+  id              Int     @id @default(autoincrement())
+  imagePath0      String? @db.VarChar(255)
+  imagePath1      String? @db.VarChar(255)
+  imagePath2      String? @db.VarChar(255)
+  imagePath3      String? @db.VarChar(255)
+  imagePath4      String? @db.VarChar(255)
+  imagePath5      String? @db.VarChar(255)
+  textArea0       String? @db.VarChar(2047)
+  textArea1       String? @db.VarChar(2047)
+  textArea2       String? @db.VarChar(2047)
+  textArea3       String? @db.VarChar(2047)
+  orderOfElements String? @db.VarChar(255)
+  userId          Int
+  title           String? @db.VarChar(128)
+  user            user    @relation(fields: [userId], references: [id])
+
+  @@index([userId], name: "userId")
 }

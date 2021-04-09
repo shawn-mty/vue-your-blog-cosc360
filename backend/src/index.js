@@ -66,34 +66,31 @@ app.post('/create-user', upload.single('image'), async (req, res) => {
 
 // create post in database and return response
 app.post('/create-blog', upload.array('images'), async (req, res) => {
-  console.log(req.body.title + ' is the title')
   const textAreas = req.body.textAreas
   const images = req.files
-  const blogElementTypesOrder = JSON.parse(req.body.blogElementTypesOrder)
+  const blogElementTypesOrderString = req.body.blogElementTypesOrder
+  const dbData = {
+    title: req.body.title,
+    orderOfElements: blogElementTypesOrderString,
+    user: { connect: { id: 2 } }, // TODO add actual user after login feature built
+  }
 
-  textAreas.forEach((textArea) => {
-    console.log('the text area ', textArea)
+  if (typeof textAreas === 'string') dbData.textArea0 = textAreas
+  else {
+    textAreas.forEach((textArea, textAreaIndex) => {
+      dbData['textArea' + textAreaIndex] = textArea
+    })
+  }
+
+  images.forEach((image, imageIndex) => {
+    dbData['imagePath' + imageIndex] = image.path
   })
 
-  images.forEach((image) => {
-    console.log(image.path)
+  console.log(dbData)
+  const result = await prisma.blog.create({
+    data: dbData,
   })
-  console.log(blogElementTypesOrder)
-
-  // const dbData = {
-  //   title: req.body.title,
-  //   : req.body.blog,
-  //   imagepath: req.file.path,
-  // }
-  // console.log(dbData)
-  // const result = await prisma.post.create({
-  //   // data: {
-  //   //   title,
-  //   //   content,
-  //   //   author: { connect: { email: authorEmail } },
-  //   // },
-  // })
-  // res.json(result)
+  res.json(result)
 })
 
 // delete a post with given id from slug
