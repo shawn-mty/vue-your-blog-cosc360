@@ -173,17 +173,17 @@ export default {
 
   methods: {
     submit() {
-      var bodyFormData = new FormData()
-      bodyFormData.append('username', this.username)
-      bodyFormData.append('password', this.password)
-      bodyFormData.append('email', this.email)
-      bodyFormData.append('image', this.image)
       this.$v.$touch()
       if (this.$v.$invalid) {
         this.submitStatus = 'ERROR'
       } else {
         // do your submit logic here
         this.submitStatus = 'PENDING'
+        var bodyFormData = new FormData()
+        bodyFormData.append('username', this.username)
+        bodyFormData.append('password', this.password)
+        bodyFormData.append('email', this.email)
+        bodyFormData.append('image', this.image)
         EventService.createUser(bodyFormData)
           .then(response => {
             console.log(response)
