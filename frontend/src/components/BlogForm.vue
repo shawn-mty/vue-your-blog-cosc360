@@ -86,15 +86,21 @@
               </p>
               <v-btn @click="submitStatus = ''" class="info">Okay</v-btn>
             </v-row>
-            <div v-if="submitStatus === 'TOOMANYIMAGES'">
+            <v-row
+              class="d-flex align-center mx-1 mb-0"
+              v-if="submitStatus === 'TOOMANYIMAGES'"
+            >
               <p class="error--text mb-0 mr-2">
                 Max number of Images is 6
               </p>
               <v-btn @click="submitStatus = ''" class="info">
                 Okay
               </v-btn>
-            </div>
-            <div v-if="submitStatus === 'TOOMANYTEXTAREASANDIMAGES'">
+            </v-row>
+            <v-row
+              class="d-flex align-center mx-1 mb-0"
+              v-if="submitStatus === 'TOOMANYTEXTAREASANDIMAGES'"
+            >
               <p class="error--text mb-0 mr-2">
                 Max number of Images is 6 and Max number of Blog Text Sections
                 is 4
@@ -102,7 +108,18 @@
               <v-btn @click="submitStatus = ''" class="info">
                 Okay
               </v-btn>
-            </div>
+            </v-row>
+            <v-row
+              class="d-flex align-center mx-1 mb-0"
+              v-if="submitStatus === 'NOTEXTAREAS'"
+            >
+              <p class="error--text mb-0 mr-2">
+                Must have at least one Blog Text Section to submit
+              </p>
+              <v-btn @click="submitStatus = ''" class="info">
+                Okay
+              </v-btn>
+            </v-row>
 
             <v-spacer v-else />
             <v-speed-dial
@@ -332,6 +349,14 @@ export default {
     },
 
     submit() {
+      let textAreaCount = 0
+      this.blogElements.forEach(blogElement => {
+        if (blogElement.type === 'textArea') textAreaCount++
+      })
+      if (textAreaCount === 0) {
+        this.submitStatus = 'NOTEXTAREAS'
+        return
+      }
       if (this.$v.$invalid) {
         this.submitStatus = 'ERROR'
       } else {
@@ -340,10 +365,7 @@ export default {
         let bodyFormData = new FormData()
         bodyFormData.append('title', this.title)
         this.blogElements.forEach((blogElement, blogElementindex) => {
-          bodyFormData.append(
-            blogElementindex + '-' + blogElement.type,
-            blogElement.content
-          )
+          bodyFormData.append('blogElement-' + blogElementindex, blogElement)
         })
         EventService.createBlog(bodyFormData)
           .then(response => {
@@ -356,6 +378,7 @@ export default {
       }
     },
     clear() {
+      this.submitStatus = ''
       this.$v.$reset()
       this.title = ''
       this.blogElements.forEach(blogElement => {
