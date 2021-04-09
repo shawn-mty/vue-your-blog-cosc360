@@ -50,13 +50,13 @@ app.use(cors())
 app.use(bodyParser.json())
 
 // create user in database and return response
-app.post('/user', upload.single('image'), async (req, res, next) => {
+app.post('/create-user', upload.single('image'), async (req, res) => {
   const hashedPass = bcrypt.hashSync(req.body.password, saltRounds)
   const dbData = {
     email: req.body.email,
     username: req.body.username,
     password: hashedPass,
-    imagepath: req.file.path,
+    profileImagePath: req.file.path,
   }
   const result = await prisma.user.create({
     data: dbData,
@@ -65,17 +65,27 @@ app.post('/user', upload.single('image'), async (req, res, next) => {
 })
 
 // create post in database and return response
-app.post('/post', async (req, res) => {
-  const { title, content, authorEmail } = req.body
-  const result = await prisma.post.create({
-    data: {
-      title,
-      content,
-      published: false,
-      author: { connect: { email: authorEmail } },
-    },
+app.post('/create-blog', upload.single('image'), async (req, res) => {
+  console.log(req.body.title + ' is the title')
+  const blogElements = JSON.parse(req.body.blogElements)
+  blogElements.forEach((blogElement) => {
+    console.log(blogElement.content)
   })
-  res.json(result)
+
+  // const dbData = {
+  //   title: req.body.title,
+  //   : req.body.blog,
+  //   imagepath: req.file.path,
+  // }
+  // console.log(dbData)
+  // const result = await prisma.post.create({
+  //   // data: {
+  //   //   title,
+  //   //   content,
+  //   //   author: { connect: { email: authorEmail } },
+  //   // },
+  // })
+  // res.json(result)
 })
 
 // delete a post with given id from slug

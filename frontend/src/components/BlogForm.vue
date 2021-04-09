@@ -24,7 +24,7 @@
                 v-model="blogElement.content"
                 @blur="
                   blogElement.content &&
-                  blogElement.content.length < 15 &&
+                  blogElement.content.length < 10 &&
                   blogElement.content.includes('<')
                     ? (blogElement.content = null)
                     : true
@@ -224,7 +224,7 @@ export default {
       $each: {
         content: {
           required,
-          maxLength: maxLength(4095),
+          maxLength: maxLength(2047),
         },
       },
     },
@@ -236,7 +236,7 @@ export default {
     blogElements: [],
     minCharCount: 4,
     maxCharCount: 14,
-    maxTextAreaCharCount: 4095,
+    maxTextAreaCharCount: 2047,
     submitStatus: null,
     imageRules: [
       value =>
@@ -375,7 +375,8 @@ export default {
         this.submitStatus = 'PENDING'
         let bodyFormData = new FormData()
         bodyFormData.append('title', this.title)
-        bodyFormData.append('blogElements', this.blogElements)
+
+        bodyFormData.append('blogElements', JSON.stringify(this.blogElements))
 
         EventService.createBlog(bodyFormData)
           .then(response => {
