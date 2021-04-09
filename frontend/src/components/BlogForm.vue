@@ -376,7 +376,24 @@ export default {
         let bodyFormData = new FormData()
         bodyFormData.append('title', this.title)
 
-        bodyFormData.append('blogElements', JSON.stringify(this.blogElements))
+        let blogElementTypesOrder = []
+        this.blogElements.forEach(blogElement => {
+          if (blogElement.type === 'textArea') {
+            bodyFormData.append(
+              'textAreas',
+              JSON.stringify(blogElement.content)
+            )
+            console.log(blogElement.type)
+            blogElementTypesOrder.push(blogElement.type)
+          } else if (blogElement.type === 'image') {
+            bodyFormData.append('images', blogElement.content)
+            blogElementTypesOrder.push(blogElement.type)
+          }
+        })
+        bodyFormData.append(
+          'blogElementTypesOrder',
+          JSON.stringify(blogElementTypesOrder)
+        )
 
         EventService.createBlog(bodyFormData)
           .then(response => {
