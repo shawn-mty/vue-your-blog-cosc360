@@ -82,8 +82,11 @@
               v-if="submitStatus === 'TOOMANYTEXTAREAS'"
             >
               <p class="error--text mb-0 mr-2">
-                Max number of Blog Text Sections is 4
+                Max number of Blog
+                <br class="d-sm-none d-md-none d-lg-none d-xl-none" />
+                Text Sections is 4
               </p>
+              <v-spacer class="d-sm-none d-md-none d-lg-none d-xl-none" />
               <v-btn @click="submitStatus = ''" class="info">Okay</v-btn>
             </v-row>
             <v-row
@@ -93,6 +96,7 @@
               <p class="error--text mb-0 mr-2">
                 Max number of Images is 6
               </p>
+              <v-spacer class="d-sm-none d-md-none d-lg-none d-xl-none" />
               <v-btn @click="submitStatus = ''" class="info">
                 Okay
               </v-btn>
@@ -102,9 +106,10 @@
               v-if="submitStatus === 'TOOMANYTEXTAREASANDIMAGES'"
             >
               <p class="error--text mb-0 mr-2">
-                Max number of Images is 6 and Max number of Blog Text Sections
-                is 4
+                Max number of Images is 6 <br />
+                Max number of Blog Text Sections is 4
               </p>
+              <v-spacer class="d-sm-none d-md-none d-lg-none d-xl-none" />
               <v-btn @click="submitStatus = ''" class="info">
                 Okay
               </v-btn>
@@ -113,16 +118,22 @@
               class="d-flex align-center mx-1 mb-0"
               v-if="submitStatus === 'NOTEXTAREAS'"
             >
-              <p class="error--text mb-0 mr-2">
-                Must have at least one Blog Text Section to submit
+              <p class="error--text mb-0 mr-2 ">
+                Must have at least one<br
+                  class="d-sm-none d-md-none d-lg-none d-xl-none"
+                />
+                Blog Text Section to submit
               </p>
-              <v-btn @click="submitStatus = ''" class="info">
+              <v-spacer class="d-sm-none d-md-none d-lg-none d-xl-none" />
+              <v-btn @click="submitStatus = ''" class="info  my-4">
                 Okay
               </v-btn>
             </v-row>
 
             <v-spacer v-else />
+            <v-spacer class="d-sm-none d-md-none d-lg-none d-xl-none" />
             <v-speed-dial
+              class="ml-auto"
               v-model="fab"
               direction="left"
               open-on-hover
@@ -170,10 +181,10 @@
             clear
           </v-btn>
           <div class="mt-5"></div>
-          <p class="typo__p" v-if="submitStatus === 'OK'">
+          <p class="typo__p success--text" v-if="submitStatus === 'OK'">
             Thanks for your submission!
           </p>
-          <p class="typo__p" v-if="submitStatus === 'ERROR'">
+          <p class="typo__p error--text" v-if="submitStatus === 'ERROR'">
             Please fill the blog form correctly.
           </p>
           <p class="typo__p" v-if="submitStatus === 'PENDING'">Sending...</p>
@@ -349,6 +360,7 @@ export default {
     },
 
     submit() {
+      this.$v.$touch()
       let textAreaCount = 0
       this.blogElements.forEach(blogElement => {
         if (blogElement.type === 'textArea') textAreaCount++
@@ -360,13 +372,11 @@ export default {
       if (this.$v.$invalid) {
         this.submitStatus = 'ERROR'
       } else {
-        // do your submit logic here
         this.submitStatus = 'PENDING'
         let bodyFormData = new FormData()
         bodyFormData.append('title', this.title)
-        this.blogElements.forEach((blogElement, blogElementindex) => {
-          bodyFormData.append('blogElement-' + blogElementindex, blogElement)
-        })
+        bodyFormData.append('blogElements', this.blogElements)
+
         EventService.createBlog(bodyFormData)
           .then(response => {
             console.log(response)
