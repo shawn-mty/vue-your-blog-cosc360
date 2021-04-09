@@ -77,19 +77,33 @@
             </v-row>
           </div>
           <v-row class="d-flex justify-space-between my-6 mx-1">
-            <p class="error--text" v-if="submitStatus === 'TOOMANYTEXTAREAS'">
-              Max number of Blog Text Sections is 4
-            </p>
-            <p class="error--text" v-if="submitStatus === 'TOOMANYIMAGES'">
-              Max number of Images is 6
-            </p>
-            <p
-              class="error--text"
-              v-if="submitStatus === 'TOOMANYTEXTAREASANDIMAGES'"
+            <v-row
+              class="d-flex align-center mx-1 mb-0"
+              v-if="submitStatus === 'TOOMANYTEXTAREAS'"
             >
-              Max number of Images is 6 and Max number of Blog Text Sections is
-              4
-            </p>
+              <p class="error--text mb-0 mr-2">
+                Max number of Blog Text Sections is 4
+              </p>
+              <v-btn @click="submitStatus = ''" class="info">Okay</v-btn>
+            </v-row>
+            <div v-if="submitStatus === 'TOOMANYIMAGES'">
+              <p class="error--text mb-0 mr-2">
+                Max number of Images is 6
+              </p>
+              <v-btn @click="submitStatus = ''" class="info">
+                Okay
+              </v-btn>
+            </div>
+            <div v-if="submitStatus === 'TOOMANYTEXTAREASANDIMAGES'">
+              <p class="error--text mb-0 mr-2">
+                Max number of Images is 6 and Max number of Blog Text Sections
+                is 4
+              </p>
+              <v-btn @click="submitStatus = ''" class="info">
+                Okay
+              </v-btn>
+            </div>
+
             <v-spacer v-else />
             <v-speed-dial
               v-model="fab"
@@ -309,6 +323,7 @@ export default {
       return errors
     },
     removeBlogElement(blogElementId) {
+      this.submitStatus = ''
       let blogElementIndex = this.blogElements.findIndex(
         blogElement => blogElement.id === blogElementId
       )
