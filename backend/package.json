@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "backend": "node src/index.js",
+    "backend": "nodemon src/index.js",
     "introspect": "npx prisma introspect",
     "generate": "npx prisma generate",
     "data-ui": "npx prisma studio"
