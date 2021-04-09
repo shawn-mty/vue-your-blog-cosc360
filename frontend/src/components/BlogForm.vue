@@ -12,6 +12,7 @@
             required
             @input="$v.title.$touch()"
             @blur="$v.title.$touch()"
+            autofocus
           >
           </v-text-field>
           <div v-for="blogElement in blogElements" :key="blogElement.id">
@@ -259,7 +260,7 @@ export default {
         Heading,
         {
           options: {
-            levels: [1, 2, 3],
+            levels: [2, 3],
           },
         },
       ],
@@ -380,7 +381,6 @@ export default {
         this.blogElements.forEach(blogElement => {
           if (blogElement.type === 'textArea') {
             bodyFormData.append('textAreas', blogElement.content)
-            console.log(blogElement.type)
             blogElementTypesOrder.push(blogElement.type)
           } else if (blogElement.type === 'image') {
             bodyFormData.append('images', blogElement.content)
@@ -396,10 +396,9 @@ export default {
           .then(response => {
             console.log(response)
             this.submitStatus = 'OK'
+            this.$router.push('blogs/' + response.data.id) // TODO go to dynamic blog pages
           })
-          .then(() => {
-            this.$router.push('/')
-          })
+          .then(() => {})
       }
     },
     clear() {
