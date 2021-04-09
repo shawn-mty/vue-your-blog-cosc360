@@ -65,12 +65,20 @@ app.post('/create-user', upload.single('image'), async (req, res) => {
 })
 
 // create post in database and return response
-app.post('/create-blog', upload.single('image'), async (req, res) => {
+app.post('/create-blog', upload.array('images'), async (req, res) => {
   console.log(req.body.title + ' is the title')
-  const blogElements = JSON.parse(req.body.blogElements)
-  blogElements.forEach((blogElement) => {
-    console.log(blogElement.content)
+  const textAreas = req.body.textAreas
+  const images = req.files
+  const blogElementTypesOrder = JSON.parse(req.body.blogElementTypesOrder)
+
+  textAreas.forEach((textArea) => {
+    console.log('the text area ', textArea)
   })
+
+  images.forEach((image) => {
+    console.log(image.path)
+  })
+  console.log(blogElementTypesOrder)
 
   // const dbData = {
   //   title: req.body.title,
