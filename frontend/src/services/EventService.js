@@ -18,9 +18,9 @@ export default {
   //   return apiClient.get('/events/' + id)
   // },
   createUser(userData) {
-    return apiClient.post('/user', userData)
+    return apiClient.post('/create-user', userData)
   },
   createBlog(blogData) {
-    return apiClient.post('/blog', blogData)
+    return apiClient.post('/create-blog', blogData)
   },
 }
