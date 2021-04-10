@@ -11,7 +11,7 @@
       <v-img v-if="blogElement.type === 'image'" :src="blogElement.content" />
 
       <v-col
-        class="d-flex flex-column justify-center align-center"
+        class="d-flex flex-column "
         v-html="blogElement.content"
         v-if="blogElement.type === 'textArea'"
       />
@@ -71,7 +71,8 @@ export default {
 </script>
 
 <style>
-body {
+body,
+html {
   overflow-wrap: anywhere;
 }
 h2,

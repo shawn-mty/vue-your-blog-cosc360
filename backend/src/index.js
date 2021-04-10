@@ -79,7 +79,7 @@ app.post('/create-blog', upload.array('images'), async (req, res) => {
   const dbData = {
     title: req.body.title,
     orderOfElements: blogElementTypesOrderString,
-    user: { connect: { id: 2 } }, // TODO add actual user after login feature built
+    user: { connect: { id: 1 } }, // TODO add actual user after login feature built
   }
 
   if (typeof textAreas === 'string') dbData.textArea0 = textAreas
