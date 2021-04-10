@@ -5,26 +5,16 @@
         <h1>Make a Blog</h1>
         <v-form>
           <BlogTitle :title.sync="title" />
-          <div v-for="blogElement in blogElements" :key="blogElement.id">
+          <div
+            v-for="(blogElement, index) in blogElements"
+            :key="blogElement.id"
+          >
             <v-row class="d-flex align-center mx-1 mt-1 mb-0">
-              <tiptap-vuetify
-                class="d-flex mr-auto"
-                style="width: 85%; min-width:85%; max-width:95%; flex: 1 1 auto; "
-                :card-props="{ width: '98%' }"
-                v-if="blogElement.type == 'textArea'"
-                v-model="blogElement.content"
-                @blur="
-                  blogElement.content &&
-                  blogElement.content.length < 10 &&
-                  blogElement.content.includes('<')
-                    ? (blogElement.content = null)
-                    : true
-                "
-                :extensions="extensions"
-                placeholder="Write a section of your blog here"
-                required
+              <BlogTextArea
+                :blogElements="blogElements"
+                :blogElementIndex="index"
+                :textAreaErrors="textAreaErrors(blogElement.id)"
               />
-
               <v-file-input
                 v-if="blogElement.type === 'image'"
                 v-model="blogElement.content"
@@ -159,25 +149,9 @@
 import { validationMixin } from 'vuelidate'
 import { required, maxLength, minLength } from 'vuelidate/lib/validators'
 import EventService from '@/services/EventService'
-import {
-  TiptapVuetify,
-  Heading,
-  Bold,
-  Italic,
-  Strike,
-  Underline,
-  Code,
-  Paragraph,
-  BulletList,
-  OrderedList,
-  ListItem,
-  Link,
-  Blockquote,
-  HardBreak,
-  History,
-} from 'tiptap-vuetify'
 import BlogTitle from '@/components/BlogTitle'
 import AddBlogElements from './AddBlogElements.vue'
+import BlogTextArea from './BlogTextArea.vue'
 
 export default {
   mixins: [validationMixin],
@@ -192,7 +166,7 @@ export default {
       },
     },
   },
-  components: { TiptapVuetify, BlogTitle, AddBlogElements },
+  components: { BlogTitle, AddBlogElements, BlogTextArea },
   data: () => ({
     title: '',
     blogElements: [],
@@ -205,30 +179,6 @@ export default {
         !value ||
         value.size < 4000000 ||
         'Avatar size should be less than 4 MB!',
-    ],
-
-    extensions: [
-      History,
-      Blockquote,
-      Link,
-      Underline,
-      Strike,
-      Italic,
-      ListItem,
-      BulletList,
-      OrderedList,
-      [
-        Heading,
-        {
-          options: {
-            levels: [2, 3],
-          },
-        },
-      ],
-      Bold,
-      Code,
-      Paragraph,
-      HardBreak,
     ],
   }),
 
