@@ -4,17 +4,8 @@
       <v-col class="justify-center w-50">
         <h1>Make a Blog</h1>
         <v-form>
-          <v-text-field
-            v-model="title"
-            :error-messages="titleErrors"
-            :counter="maxCharCount"
-            label="Title"
-            required
-            @input="$v.title.$touch()"
-            @blur="$v.title.$touch()"
-            autofocus
-          >
-          </v-text-field>
+          <BlogTitle :title.sync="title" />
+
           <div v-for="blogElement in blogElements" :key="blogElement.id">
             <v-row class="d-flex align-center mx-1 mt-1 mb-0">
               <tiptap-vuetify
@@ -216,6 +207,7 @@ import {
   HardBreak,
   History,
 } from 'tiptap-vuetify'
+import BlogTitle from '@/components/BlogTitle'
 
 export default {
   mixins: [validationMixin],
@@ -230,13 +222,11 @@ export default {
       },
     },
   },
-  components: { TiptapVuetify },
+  components: { TiptapVuetify, BlogTitle },
   data: () => ({
     title: '',
     uniqueId: -1,
     blogElements: [],
-    minCharCount: 4,
-    maxCharCount: 127,
     maxTextAreaCharCount: 2047,
     maxTextAreas: 10,
     maxImages: 15,
@@ -272,23 +262,6 @@ export default {
       HardBreak,
     ],
   }),
-
-  computed: {
-    titleErrors() {
-      const errors = []
-      if (!this.$v.title.$dirty) return errors
-      !this.$v.title.maxLength &&
-        errors.push(
-          'Title must be at most ' + this.maxCharCount + ' characters long'
-        )
-      !this.$v.title.minLength &&
-        errors.push(
-          'Title must be at least ' + this.minCharCount + ' characters long'
-        )
-      !this.$v.title.required && errors.push('Title is required.')
-      return errors
-    },
-  },
 
   methods: {
     disallowTooManyBlogElements(blogElementType) {
@@ -399,11 +372,12 @@ export default {
 
         EventService.createBlog(bodyFormData)
           .then(response => {
-            console.log(response)
             this.submitStatus = 'OK'
             this.$router.push('blog/' + response.data.id) // TODO go to dynamic blog pages
           })
-          .then(() => {})
+          .catch(error => {
+            console.log('There was an error:', error.response)
+          })
       }
     },
     clear() {

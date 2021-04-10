@@ -185,12 +185,14 @@ export default {
         bodyFormData.append('email', this.email)
         bodyFormData.append('image', this.image)
         EventService.createUser(bodyFormData)
-          .then(response => {
-            console.log(response)
+          .then(() => {
             this.submitStatus = 'OK'
           })
           .then(() => {
             this.$router.push('/')
+          })
+          .catch(error => {
+            console.log('There was an error:', error.response)
           })
       }
     },

@@ -29,8 +29,7 @@ export default {
           username: 'EpicPerson123',
           message:
             'Blabal balblabala cats blalbalba beer Blabal balblabala cats blalbalba beer. Blabal balblabala cats blalbalba beer Blabal balblabala cats blalbalba beer. Blabal balblabala cats blalbalba beer Blabal balblabala cats blalbalba beer. Blabal balblabala cats blalbalba beer Blabal balblabala cats blalbalba beer. Blabal balblabala cats blalbalba beer Blabal balblabala cats blalbalba beer. ',
-          avatar:
-            'http://localhost:3000/uploads/Shawn-tripped.png',
+          avatar: 'http://localhost:3000/uploads/Shawn-tripped.png',
           time: new Date().toLocaleString('en-us', {
             month: 'short',
             year: 'numeric',
@@ -43,8 +42,7 @@ export default {
           message:
             'OMG I LOVE Cats and beer they are the best things, blablablablalbalblalba sammiches OMG I LOVE Cats and beer they are the best things, blablablablalbalblalba sammiches OMG I LOVE Cats and beer they are the best things, blablablablalbalblalba sammiches OMG I LOVE Cats and beer they are the best things, blablablablalbalblalba sammiches ',
           username: 'CatBeer623',
-          avatar:
-            'http://localhost:3000/uploads/shawn-face.jfif',
+          avatar: 'http://localhost:3000/uploads/shawn-face.jfif',
           time: new Date().toLocaleString('en-us', {
             month: 'short',
             year: 'numeric',
