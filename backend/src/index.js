@@ -75,9 +75,17 @@ app.post('/create-user', upload.single('image'), async (req, res) => {
 app.post('/create-blog', upload.array('images'), async (req, res) => {
   const blogElementTypesOrderString = req.body.blogElementTypesOrder
   const images = req.files
-  const textAreas = req.body.textAreas.map((textArea) => {
-    return { textArea: textArea }
-  })
+  let textAreas = []
+  if (typeof req.body.textAreas === 'string') {
+    textAreas.push({ textArea: req.body.textAreas })
+  } else if (Array.isArray(req.body.textAreas)) {
+    textAreas = req.body.textAreas.map((textArea) => {
+      return { textArea: textArea }
+    })
+  } else {
+    throw new Error('textArea has wrong type')
+  }
+
   const imagePaths = images
     ? images.map((image) => {
         console.log('image path is ' + image.path)
