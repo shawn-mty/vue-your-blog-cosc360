@@ -73,11 +73,11 @@ app.post('/create-user', upload.single('image'), async (req, res) => {
 
 // create post in database and return response
 app.post('/create-blog', upload.array('images'), async (req, res) => {
-  const textAreas = req.body.textAreas
   const blogElementTypesOrderString = req.body.blogElementTypesOrder
-
   const images = req.files
-
+  const textAreas = req.body.textAreas.map((textArea) => {
+    return { textArea: textArea }
+  })
   const imagePaths = images
     ? images.map((image) => {
         console.log('image path is ' + image.path)
@@ -92,13 +92,9 @@ app.post('/create-blog', upload.array('images'), async (req, res) => {
     blog_imagepaths: {
       create: imagePaths,
     },
-  }
-
-  if (typeof textAreas === 'string') dbData.textArea0 = textAreas
-  else {
-    textAreas.forEach((textArea, textAreaIndex) => {
-      dbData['textArea' + textAreaIndex] = textArea
-    })
+    blog_textareas: {
+      create: textAreas,
+    },
   }
 
   console.log(dbData)
@@ -127,15 +123,27 @@ app.get('/blog/:id', async (req, res) => {
       id: parseInt(id),
     },
   })
-  const imageData = await prisma.blog_imagepaths.findMany({
+  const imagePathData = await prisma.blog_imagepaths.findMany({
     where: {
       blogId: parseInt(id),
     },
   })
+  const textAreaData = await prisma.blog_textareas.findMany({
+    where: {
+      blogId: parseInt(id),
+    },
+  })
+  if (blogData) {
+    blogData.imagePaths = imagePathData
+      ? imagePathData.map((imageDatum) => imageDatum.imagePath)
+      : []
+    blogData.textAreas = textAreaData
+      ? textAreaData.map((textAreaDatum) => textAreaDatum.textArea)
+      : []
+  }
   console.log(blogData)
-  blogData.imagePaths = imageData.map((imageDatum) => imageDatum.imagePath)
-  console.log(imageData)
-
+  console.log(imagePathData)
+  console.log(textAreaData)
   res.send(blogData)
 })
 

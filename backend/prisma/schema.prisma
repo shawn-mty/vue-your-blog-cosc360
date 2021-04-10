@@ -40,17 +40,13 @@ model user {
 
 model blog {
   id              Int               @id @default(autoincrement())
-  textArea0       String?           @db.VarChar(2047)
-  textArea1       String?           @db.VarChar(2047)
-  textArea2       String?           @db.VarChar(2047)
-  textArea3       String?           @db.VarChar(2047)
   orderOfElements String?           @db.VarChar(255)
   userId          Int
   title           String?           @db.VarChar(128)
-  imagePaths      String?           @db.VarChar(2047)
   user            user              @relation(fields: [userId], references: [id])
+  blog_headers    blog_headers[]
   blog_imagepaths blog_imagepaths[]
-  blog_textarea   blog_textarea[]
+  blog_textareas  blog_textareas[]
 
   @@index([userId], name: "userId")
 }
@@ -64,7 +60,16 @@ model blog_imagepaths {
   @@index([blogId], name: "blogId_idx")
 }
 
-model blog_textarea {
+model blog_headers {
+  id     Int    @id @default(autoincrement())
+  header String @db.VarChar(128)
+  blogId Int
+  blog   blog   @relation(fields: [blogId], references: [id])
+
+  @@index([blogId], name: "blogId_idx")
+}
+
+model blog_textareas {
   id       Int    @id @default(autoincrement())
   textArea String @db.VarChar(2047)
   blogId   Int

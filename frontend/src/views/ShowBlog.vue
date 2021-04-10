@@ -36,25 +36,18 @@ export default {
         console.log(blogData)
         this.title = blogData.title
         let imageURLs = []
-        let textSections = []
         blogData.imagePaths.map(imagePath => {
           imageURLs.push(
             'http://localhost:3000/' + imagePath.replace(/\\/g, '/')
           )
         })
 
-        for (const property in blogData) {
-          if (property.includes('textArea')) {
-            // console.log(blogData[property])
-            textSections.push(blogData[property])
-          }
-        }
         const orderOfElements = JSON.parse(blogData.orderOfElements)
         for (let i = 0; i < orderOfElements.length; i++) {
           if (orderOfElements[i] === 'textArea') {
             this.blogElements.push({
               type: 'textArea',
-              content: textSections.shift(),
+              content: blogData.textAreas.shift(),
             })
           } else if (orderOfElements[i] === 'image') {
             this.blogElements.push({
