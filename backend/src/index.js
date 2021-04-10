@@ -1,8 +1,9 @@
+const { upload } = require('./middleware/multer')
 const express = require('express')
 const bodyParser = require('body-parser')
 const cors = require('cors')
 const { PrismaClient } = require('@prisma/client')
-const multer = require('multer')
+
 const bcrypt = require('bcrypt')
 const saltRounds = 10
 const serveIndex = require('serve-index')
@@ -15,34 +16,6 @@ const serveIndex = require('serve-index')
 //       '$2b$10$pMATEIQpXR7M12ItstRTMuEbUw3Ehluix2gW3LXoqBz8.JGrTkeXq'
 //     )
 // )
-
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, './uploads/')
-  },
-  filename: function (req, file, cb) {
-    cb(
-      null,
-      new Date().toISOString().replace(/:/g, '-') + '-' + file.originalname
-    )
-  },
-})
-
-const fileFilter = (req, file, cb) => {
-  if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
-    cb(null, true)
-  } else {
-    cb(null, false)
-  }
-}
-
-const upload = multer({
-  storage: storage,
-  limits: {
-    fileSize: 1024 * 1024 * 5,
-  },
-  fileFilter: fileFilter,
-})
 
 const prisma = new PrismaClient()
 const app = express()
@@ -88,7 +61,6 @@ app.post('/create-blog', upload.array('images'), async (req, res) => {
 
   const imagePaths = images
     ? images.map((image) => {
-        console.log('image path is ' + image.path)
         return { imagePath: image.path }
       })
     : []
@@ -105,7 +77,6 @@ app.post('/create-blog', upload.array('images'), async (req, res) => {
     },
   }
 
-  console.log(dbData)
   const result = await prisma.blog.create({
     data: dbData,
   })
@@ -149,29 +120,9 @@ app.get('/blog/:id', async (req, res) => {
       ? textAreaData.map((textAreaDatum) => textAreaDatum.textArea)
       : []
   }
-  console.log(blogData)
-  console.log(imagePathData)
-  console.log(textAreaData)
+
   res.send(blogData)
 })
-
-// display users
-// (async function () {
-//   const allUsers = await prisma.user.findMany({
-//     include: {
-//       posts: true,
-//       profile: true,
-//     },
-//   })
-//   console.dir(allUsers, { depth: null })
-// })();
-
-// post data
-// const post = await prisma.post.update({
-//   where: { id: 1 },
-//   data: { published: true },
-// })
-// console.log(post)
 
 app.listen(3000, () =>
   console.log('🚀 Server ready at: http://localhost:3000\n')

@@ -183,6 +183,8 @@ export default {
             this.$router.push('/')
           })
           .catch(error => {
+            this.clear()
+            alert(error.response)
             console.log('There was an error:', error.response)
           })
       }
