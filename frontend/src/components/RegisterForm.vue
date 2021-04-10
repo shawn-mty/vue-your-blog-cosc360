@@ -32,16 +32,21 @@
             @input="$v.email.$touch()"
             @blur="$v.email.$touch()"
           ></v-text-field>
-          <v-file-input
-            v-model="image"
-            :rules="imageRules"
-            :error-messages="imageErrors"
-            placeholder="Insert Profile Pic"
-            accept="image/png, image/jpeg, image/bmp"
-            prepend-icon="mdi-camera"
-            label="Insert Profile Pic"
-            chips
-          ></v-file-input>
+          <v-row>
+            <v-file-input
+              class="mt-3 ml-2"
+              v-model="image"
+              :rules="imageRules"
+              :error-messages="imageErrors"
+              placeholder="Insert Profile Pic"
+              accept="image/png, image/jpeg, image/bmp"
+              prepend-icon="mdi-camera"
+              label="Insert Profile Pic"
+              chips
+            ></v-file-input>
+            <v-spacer />
+          </v-row>
+
           <v-checkbox
             v-model="checkbox"
             :error-messages="checkboxErrors"
@@ -168,17 +173,17 @@ export default {
 
   methods: {
     submit() {
-      var bodyFormData = new FormData()
-      bodyFormData.append('username', this.username)
-      bodyFormData.append('password', this.password)
-      bodyFormData.append('email', this.email)
-      bodyFormData.append('image', this.image)
       this.$v.$touch()
       if (this.$v.$invalid) {
         this.submitStatus = 'ERROR'
       } else {
         // do your submit logic here
         this.submitStatus = 'PENDING'
+        var bodyFormData = new FormData()
+        bodyFormData.append('username', this.username)
+        bodyFormData.append('password', this.password)
+        bodyFormData.append('email', this.email)
+        bodyFormData.append('image', this.image)
         EventService.createUser(bodyFormData)
           .then(response => {
             console.log(response)

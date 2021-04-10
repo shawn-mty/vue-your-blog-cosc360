@@ -27,12 +27,53 @@ model profile {
 }
 
 model user {
-  id        Int      @id @default(autoincrement())
-  name      String?  @db.VarChar(255)
-  email     String   @unique @db.VarChar(255)
-  username  String?  @db.VarChar(14)
-  password  String?  @db.VarChar(255)
-  imagepath String?  @db.VarChar(255)
-  post      post[]
-  profile   profile?
+  id               Int      @id @default(autoincrement())
+  name             String?  @db.VarChar(255)
+  email            String   @unique @db.VarChar(255)
+  username         String   @unique @db.VarChar(14)
+  password         String?  @db.VarChar(255)
+  profileImagePath String?  @db.VarChar(255)
+  blog             blog[]
+  post             post[]
+  profile          profile?
+}
+
+model blog {
+  id              Int               @id @default(autoincrement())
+  orderOfElements String?           @db.VarChar(255)
+  userId          Int
+  title           String?           @db.VarChar(128)
+  user            user              @relation(fields: [userId], references: [id])
+  blog_headers    blog_headers[]
+  blog_imagepaths blog_imagepaths[]
+  blog_textareas  blog_textareas[]
+
+  @@index([userId], name: "userId")
+}
+
+model blog_imagepaths {
+  id        Int    @id @default(autoincrement())
+  blogId    Int
+  imagePath String @db.VarChar(255)
+  blog      blog   @relation(fields: [blogId], references: [id])
+
+  @@index([blogId], name: "blogId_idx")
+}
+
+model blog_headers {
+  id     Int    @id @default(autoincrement())
+  header String @db.VarChar(128)
+  blogId Int
+  blog   blog   @relation(fields: [blogId], references: [id])
+
+  @@index([blogId], name: "blogId_idx")
+}
+
+model blog_textareas {
+  id       Int    @id @default(autoincrement())
+  textArea String @db.VarChar(2047)
+  blogId   Int
+  blog     blog   @relation(fields: [blogId], references: [id])
+
+  @@index([blogId], name: "blogId_idx")
 }
