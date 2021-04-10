@@ -85,7 +85,7 @@
               <p class="error--text mb-0 mr-2">
                 Max number of Blog
                 <br class="d-sm-none d-md-none d-lg-none d-xl-none" />
-                Text Sections is 4
+                Text Sections is {{ maxTextAreas }}
               </p>
               <v-spacer class="d-sm-none d-md-none d-lg-none d-xl-none" />
               <v-btn @click="submitStatus = ''" class="info">Okay</v-btn>
@@ -95,7 +95,7 @@
               v-if="submitStatus === 'TOOMANYIMAGES'"
             >
               <p class="error--text mb-0 mr-2">
-                Max number of Images is 6
+                Max number of Images is {{ maxImages }}
               </p>
               <v-spacer class="d-sm-none d-md-none d-lg-none d-xl-none" />
               <v-btn @click="submitStatus = ''" class="info">
@@ -107,8 +107,8 @@
               v-if="submitStatus === 'TOOMANYTEXTAREASANDIMAGES'"
             >
               <p class="error--text mb-0 mr-2">
-                Max number of Images is 6 <br />
-                Max number of Blog Text Sections is 4
+                Max number of Images is {{ maxImages }} <br />
+                Max number of Blog Text Sections is {{ maxTextAreas }}
               </p>
               <v-spacer class="d-sm-none d-md-none d-lg-none d-xl-none" />
               <v-btn @click="submitStatus = ''" class="info">
@@ -238,6 +238,8 @@ export default {
     minCharCount: 4,
     maxCharCount: 127,
     maxTextAreaCharCount: 2047,
+    maxTextAreas: 10,
+    maxImages: 15,
     submitStatus: null,
     imageRules: [
       value =>
@@ -297,13 +299,16 @@ export default {
         else if (blogElement.type === 'image') imageCount++
       })
 
-      if (textAreaCount >= 4 && imageCount >= 6) {
+      if (textAreaCount >= this.maxTextAreas && imageCount >= this.maxImages) {
         this.submitStatus = 'TOOMANYTEXTAREASANDIMAGES'
         return true
-      } else if (textAreaCount === 4 && blogElementType === 'textArea') {
+      } else if (
+        textAreaCount === this.maxTextAreas &&
+        blogElementType === 'textArea'
+      ) {
         this.submitStatus = 'TOOMANYTEXTAREAS'
         return true
-      } else if (imageCount >= 6 && blogElementType === 'image') {
+      } else if (imageCount >= this.maxImages && blogElementType === 'image') {
         this.submitStatus = 'TOOMANYIMAGES'
         return true
       } else {
