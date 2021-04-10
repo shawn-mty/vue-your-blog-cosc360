@@ -71,10 +71,6 @@ export default {
 </script>
 
 <style scoped>
-body,
-html {
-  overflow-wrap: anywhere;
-}
 h2,
 h3 {
   text-align: center;

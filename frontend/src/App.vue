@@ -43,3 +43,9 @@ export default {
   }),
 }
 </script>
+<style>
+body,
+html {
+  overflow-wrap: anywhere !important;
+}
+</style>
