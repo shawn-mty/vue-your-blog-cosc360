@@ -13,6 +13,7 @@
             required
             @input="$v.username.$touch()"
             @blur="$v.username.$touch()"
+            autofocus
           ></v-text-field>
           <v-text-field
             v-model="password"

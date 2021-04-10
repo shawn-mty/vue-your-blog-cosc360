@@ -44,7 +44,7 @@ app.post('/create-user', upload.single('image'), async (req, res, next) => {
     })
     res.json(result)
   } catch (err) {
-    res.status(404).send(err)
+    res.status(500).send(err)
   }
 })
 
@@ -80,11 +80,14 @@ app.post('/create-blog', upload.array('images'), async (req, res) => {
       create: textAreas,
     },
   }
-
-  const result = await prisma.blog.create({
-    data: dbData,
-  })
-  res.json(result)
+  try {
+    const result = await prisma.blog.create({
+      data: dbData,
+    })
+    res.json(result)
+  } catch (err) {
+    res.status(500).send(err)
+  }
 })
 
 // delete a post with given id from slug
@@ -101,31 +104,35 @@ app.delete('/post/:id', async (req, res) => {
 // return post with a given id from slug
 app.get('/blog/:id', async (req, res) => {
   const { id } = req.params
-  const blogData = await prisma.blog.findUnique({
-    where: {
-      id: parseInt(id),
-    },
-  })
-  const imagePathData = await prisma.blog_imagepaths.findMany({
-    where: {
-      blogId: parseInt(id),
-    },
-  })
-  const textAreaData = await prisma.blog_textareas.findMany({
-    where: {
-      blogId: parseInt(id),
-    },
-  })
-  if (blogData) {
-    blogData.imagePaths = imagePathData
-      ? imagePathData.map((imageDatum) => imageDatum.imagePath)
-      : []
-    blogData.textAreas = textAreaData
-      ? textAreaData.map((textAreaDatum) => textAreaDatum.textArea)
-      : []
-  }
+  try {
+    const blogData = await prisma.blog.findUnique({
+      where: {
+        id: parseInt(id),
+      },
+    })
+    const imagePathData = await prisma.blog_imagepaths.findMany({
+      where: {
+        blogId: parseInt(id),
+      },
+    })
+    const textAreaData = await prisma.blog_textareas.findMany({
+      where: {
+        blogId: parseInt(id),
+      },
+    })
+    if (blogData) {
+      blogData.imagePaths = imagePathData
+        ? imagePathData.map((imageDatum) => imageDatum.imagePath)
+        : []
+      blogData.textAreas = textAreaData
+        ? textAreaData.map((textAreaDatum) => textAreaDatum.textArea)
+        : []
+    }
 
-  res.send(blogData)
+    res.send(blogData)
+  } catch (err) {
+    res.status(500).send(err)
+  }
 })
 
 app.listen(3000, () =>
