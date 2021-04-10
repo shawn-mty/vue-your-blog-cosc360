@@ -41,77 +41,17 @@
                 </v-icon>
               </v-btn>
             </v-row>
-            <v-row
-              v-if="blogElement.type === 'textArea'"
-              class="d-flex align-center mx-1 mt-0 mb-0"
-            >
-              <v-text-field
-                class="d-flex mr-auto pt-0 mt-0"
-                hidden
-                style=" min-width:85%; max-width:93%; flex: 1 1 auto; "
-                v-model="blogElement.content"
-                :error-messages="textAreaErrors(blogElement.id)"
-              />
-              <v-spacer class="d-lg-none d-xl-none d-md-none d-sm-none" />
-              <v-spacer class="d-lg-none d-xl-none d-md-none d-sm-none" />
-              <v-spacer class="d-lg-none d-xl-none d-md-none d-sm-none" />
-            </v-row>
+            <BlogTextAreaValidation
+              :blogElement="blogElement"
+              :textAreaErrors="textAreaErrors(blogElement.id)"
+            />
           </div>
           <v-row class="d-flex justify-space-between my-6 mx-1">
-            <v-row
-              class="d-flex align-center mx-1 mb-0"
-              v-if="submitStatus === 'TOOMANYTEXTAREAS'"
-            >
-              <p class="error--text mb-0 mr-2">
-                Max number of Blog
-                <br class="d-sm-none d-md-none d-lg-none d-xl-none" />
-                Text Sections is {{ maxTextAreas }}
-              </p>
-              <v-spacer class="d-sm-none d-md-none d-lg-none d-xl-none" />
-              <v-btn @click="submitStatus = ''" class="info">Okay</v-btn>
-            </v-row>
-            <v-row
-              class="d-flex align-center mx-1 mb-0"
-              v-if="submitStatus === 'TOOMANYIMAGES'"
-            >
-              <p class="error--text mb-0 mr-2">
-                Max number of Images is {{ maxImages }}
-              </p>
-              <v-spacer class="d-sm-none d-md-none d-lg-none d-xl-none" />
-              <v-btn @click="submitStatus = ''" class="info">
-                Okay
-              </v-btn>
-            </v-row>
-            <v-row
-              class="d-flex align-center mx-1 mb-0"
-              v-if="submitStatus === 'TOOMANYTEXTAREASANDIMAGES'"
-            >
-              <p class="error--text mb-0 mr-2">
-                Max number of Images is {{ maxImages }} <br />
-                Max number of Blog Text Sections is {{ maxTextAreas }}
-              </p>
-              <v-spacer class="d-sm-none d-md-none d-lg-none d-xl-none" />
-              <v-btn @click="submitStatus = ''" class="info">
-                Okay
-              </v-btn>
-            </v-row>
-            <v-row
-              class="d-flex align-center mx-1 mb-0"
-              v-if="submitStatus === 'NOTEXTAREAS'"
-            >
-              <p class="error--text mb-0 mr-2 ">
-                Must have at least one<br
-                  class="d-sm-none d-md-none d-lg-none d-xl-none"
-                />
-                Blog Text Section to submit
-              </p>
-              <v-spacer class="d-sm-none d-md-none d-lg-none d-xl-none" />
-              <v-btn @click="submitStatus = ''" class="info  my-4">
-                Okay
-              </v-btn>
-            </v-row>
-
-            <v-spacer v-else />
+            <BlogFormSubmitErrors
+              :submitStatus.sync="submitStatus"
+              :maxTextAreas="maxTextAreas"
+              :maxImages="maxImages"
+            />
             <v-spacer class="d-sm-none d-md-none d-lg-none d-xl-none" />
             <AddBlogElements
               :blogElements.sync="blogElements"
@@ -152,8 +92,13 @@ import EventService from '@/services/EventService'
 import BlogTitle from '@/components/BlogTitle'
 import AddBlogElements from './AddBlogElements.vue'
 import BlogTextArea from './BlogTextArea.vue'
+import BlogTextAreaValidation from './BlogTextAreaValidation.vue'
+import BlogFormSubmitErrors from './BlogFormSubmitErrors.vue'
 
 export default {
+  created() {
+    this.$v.$touch()
+  },
   mixins: [validationMixin],
   validations: {
     title: { required, maxLength: maxLength(127), minLength: minLength(4) },
@@ -166,7 +111,13 @@ export default {
       },
     },
   },
-  components: { BlogTitle, AddBlogElements, BlogTextArea },
+  components: {
+    BlogTitle,
+    AddBlogElements,
+    BlogTextArea,
+    BlogTextAreaValidation,
+    BlogFormSubmitErrors,
+  },
   data: () => ({
     title: '',
     blogElements: [],
