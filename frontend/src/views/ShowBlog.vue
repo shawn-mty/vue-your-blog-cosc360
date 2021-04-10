@@ -76,7 +76,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 body,
 html {
   overflow-wrap: anywhere;
@@ -85,5 +85,8 @@ h2,
 h3 {
   text-align: center;
   margin-bottom: 1em;
+}
+.container {
+  max-width: 80ch !important;
 }
 </style>
