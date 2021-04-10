@@ -16,12 +16,18 @@
         v-if="blogElement.type === 'textArea'"
       />
     </v-row>
+    <v-divider />
+    <v-row class="d-flex my-5 mx-3 ">
+      <BlogComments />
+    </v-row>
   </v-container>
 </template>
 
 <script>
 import EventService from '@/services/EventService.js'
+import BlogComments from '../components/BlogComments.vue'
 export default {
+  components: { BlogComments },
   props: ['id'],
   data() {
     return {
