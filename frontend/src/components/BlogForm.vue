@@ -11,6 +11,7 @@
           >
             <v-row class="d-flex align-center mx-1 mt-1 mb-0">
               <BlogTextArea
+                class="mt-4"
                 :blogElements="blogElements"
                 :blogElementIndex="index"
                 :textAreaErrors="textAreaErrors(blogElement.id)"
@@ -76,7 +77,7 @@
             Thanks for your submission!
           </p>
           <p class="typo__p error--text" v-if="submitStatus === 'ERROR'">
-            Please fill the blog form correctly.
+            Please fill in the blog form correctly.
           </p>
           <p class="typo__p" v-if="submitStatus === 'PENDING'">Sending...</p>
         </v-form>
@@ -96,21 +97,6 @@ import BlogTextAreaValidation from './BlogTextAreaValidation.vue'
 import BlogFormSubmitErrors from './BlogFormSubmitErrors.vue'
 
 export default {
-  created() {
-    this.$v.$touch()
-  },
-  mixins: [validationMixin],
-  validations: {
-    title: { required, maxLength: maxLength(127), minLength: minLength(4) },
-    blogElements: {
-      $each: {
-        content: {
-          required,
-          maxLength: maxLength(2047),
-        },
-      },
-    },
-  },
   components: {
     BlogTitle,
     AddBlogElements,
@@ -134,42 +120,40 @@ export default {
   }),
 
   methods: {
-    textAreaErrors(blogElementId) {
-      let blogElementIndex = this.blogElements.findIndex(blogElement => {
+    getBlogElementIndex(blogElementId) {
+      return this.blogElements.findIndex(blogElement => {
         return blogElement.id === blogElementId
       })
+    },
+    textAreaErrors(blogElementId) {
+      let blogElementIndex = this.getBlogElementIndex(blogElementId)
+      const domBlogElement = this.$v.blogElements.$each[blogElementIndex]
+
       const errors = []
-      if (!this.$v.blogElements.$each[blogElementIndex].content.$dirty)
-        return errors
-      !this.$v.blogElements.$each[blogElementIndex].content.maxLength &&
+      if (!domBlogElement.content.$dirty) return errors
+      !domBlogElement.content.maxLength &&
         errors.push(
-          'Blog Section must be at most ' +
+          'Blog Text Section must be at most ' +
             this.maxTextAreaCharCount +
             ' characters long'
         )
-      !this.$v.blogElements.$each[blogElementIndex].content.required &&
-        errors.push('TextArea is required.')
+      !domBlogElement.content.required && errors.push('TextArea is required.')
+
       return errors
     },
     imageErrors(blogElementId) {
-      let blogElementIndex = this.blogElements.findIndex(blogElement => {
-        return blogElement.id === blogElementId
-      })
+      let blogElementIndex = this.getBlogElementIndex(blogElementId)
+      const domBlogElement = this.$v.blogElements.$each[blogElementIndex]
 
       const errors = []
-      if (!this.$v.blogElements.$each[blogElementIndex].content.$dirty)
-        return errors
-
-      !this.$v.blogElements.$each[blogElementIndex].content.required &&
-        errors.push('Pic is required.')
+      if (!domBlogElement.content.$dirty) return errors
+      !domBlogElement.content.required && errors.push('Pic is required.')
 
       return errors
     },
     removeBlogElement(blogElementId) {
       this.submitStatus = ''
-      let blogElementIndex = this.blogElements.findIndex(
-        blogElement => blogElement.id === blogElementId
-      )
+      let blogElementIndex = this.getBlogElementIndex(blogElementId)
 
       this.blogElements.splice(blogElementIndex, 1)
     },
@@ -218,11 +202,21 @@ export default {
     },
     clear() {
       this.submitStatus = ''
-      this.$v.$reset()
       this.title = ''
-      this.blogElements.forEach(blogElement => {
-        blogElement.content = null
-      })
+      this.blogElements = []
+      this.$v.$reset()
+    },
+  },
+  mixins: [validationMixin],
+  validations: {
+    title: { required, maxLength: maxLength(127), minLength: minLength(4) },
+    blogElements: {
+      $each: {
+        content: {
+          required,
+          maxLength: maxLength(2047),
+        },
+      },
     },
   },
 }
