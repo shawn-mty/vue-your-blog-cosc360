@@ -61,25 +61,11 @@
               :maxImages="maxImages"
             />
           </v-row>
-
-          <v-btn
-            class="mr-4 primary"
-            @click="submit"
-            :disabled="submitStatus === 'PENDING'"
-          >
-            submit
-          </v-btn>
-          <v-btn @click="clear">
-            clear
-          </v-btn>
-          <div class="mt-5"></div>
-          <p class="typo__p success--text" v-if="submitStatus === 'OK'">
-            Thanks for your submission!
-          </p>
-          <p class="typo__p error--text" v-if="submitStatus === 'ERROR'">
-            Please fill in the blog form correctly.
-          </p>
-          <p class="typo__p" v-if="submitStatus === 'PENDING'">Sending...</p>
+          <FormSubmitAndClear
+            :submitStatus.sync="submitStatus"
+            @clear="clear"
+            @submit="submit"
+          />
         </v-form>
       </v-col>
     </v-row>
@@ -95,6 +81,7 @@ import AddBlogElements from './AddBlogElements.vue'
 import BlogTextArea from './BlogTextArea.vue'
 import BlogTextAreaValidation from './BlogTextAreaValidation.vue'
 import BlogFormSubmitErrors from './BlogFormSubmitErrors.vue'
+import FormSubmitAndClear from './FormSubmitAndClear.vue'
 
 export default {
   components: {
@@ -103,6 +90,7 @@ export default {
     BlogTextArea,
     BlogTextAreaValidation,
     BlogFormSubmitErrors,
+    FormSubmitAndClear,
   },
   data: () => ({
     title: '',

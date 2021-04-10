@@ -56,24 +56,12 @@
             @blur="$v.checkbox.$touch()"
           ></v-checkbox>
 
-          <v-btn
-            class="mr-4 primary"
-            @click="submit"
-            :disabled="submitStatus === 'PENDING'"
-          >
-            submit
-          </v-btn>
-          <v-btn @click="clear">
-            clear
-          </v-btn>
           <div class="mt-5"></div>
-          <p class="typo__p" v-if="submitStatus === 'OK'">
-            Thanks for your submission!
-          </p>
-          <p class="typo__p" v-if="submitStatus === 'ERROR'">
-            Please fill the form correctly.
-          </p>
-          <p class="typo__p" v-if="submitStatus === 'PENDING'">Sending...</p>
+          <FormSubmitAndClear
+            :submitStatus.sync="submitStatus"
+            @clear="clear"
+            @submit="submit"
+          />
         </v-form>
       </v-col>
     </v-row>
@@ -84,8 +72,10 @@
 import { validationMixin } from 'vuelidate'
 import { required, maxLength, minLength, email } from 'vuelidate/lib/validators'
 import EventService from '@/services/EventService'
+import FormSubmitAndClear from './FormSubmitAndClear.vue'
 
 export default {
+  components: { FormSubmitAndClear },
   mixins: [validationMixin],
 
   validations: {
@@ -121,7 +111,8 @@ export default {
     checkboxErrors() {
       const errors = []
       if (!this.$v.checkbox.$dirty) return errors
-      !this.$v.checkbox.checked && errors.push('You must agree to continue!')
+      !this.$v.checkbox.checked &&
+        errors.push('Please check the box to continue.')
       return errors
     },
     usernameErrors() {
@@ -129,11 +120,11 @@ export default {
       if (!this.$v.username.$dirty) return errors
       !this.$v.username.maxLength &&
         errors.push(
-          'Username must be at most ' + this.maxCharCount + ' characters long'
+          'Username must be at most ' + this.maxCharCount + ' characters long.'
         )
       !this.$v.username.minLength &&
         errors.push(
-          'Username must be at least ' + this.minCharCount + ' characters long'
+          'Username must be at least ' + this.minCharCount + ' characters long.'
         )
       !this.$v.username.required && errors.push('Username is required.')
       return errors
@@ -143,30 +134,30 @@ export default {
       if (!this.$v.password.$dirty) return errors
       !this.$v.password.maxLength &&
         errors.push(
-          'Password must be at most ' + this.maxCharCount + ' characters long'
+          'Password must be at most ' + this.maxCharCount + ' characters long.'
         )
       !this.$v.password.minLength &&
         errors.push(
-          'Password must be at least ' + this.minCharCount + ' characters long'
+          'Password must be at least ' + this.minCharCount + ' characters long.'
         )
       !this.$v.password.required && errors.push('Password is required.')
 
       if (this.password.includes(this.username))
-        errors.push('Username must not include password')
+        errors.push('Username must not include password.')
 
       return errors
     },
     emailErrors() {
       const errors = []
       if (!this.$v.email.$dirty) return errors
-      !this.$v.email.email && errors.push('Must be valid e-mail')
-      !this.$v.email.required && errors.push('E-mail is required')
+      !this.$v.email.email && errors.push('Must be valid e-mail.')
+      !this.$v.email.required && errors.push('E-mail is required.')
       return errors
     },
     imageErrors() {
       const errors = []
       if (!this.$v.image.$dirty) return errors
-      !this.$v.image.required && errors.push('Profile Pic is required')
+      !this.$v.image.required && errors.push('Profile Pic is required.')
       return errors
     },
   },
