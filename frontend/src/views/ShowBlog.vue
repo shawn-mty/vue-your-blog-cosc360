@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container class="blog">
     <v-row class="d-flex justify-center my-5 mx-3">
       <h1 class="text-center">{{ title }}</h1>
     </v-row>
@@ -69,13 +69,13 @@ export default {
 }
 </script>
 
-<style scoped>
-h2,
-h3 {
+<style>
+.blog h2,
+.blog h3 {
   text-align: center;
   margin-bottom: 1em;
 }
-.container {
+.blog.container {
   max-width: 80ch !important;
 }
 </style>
