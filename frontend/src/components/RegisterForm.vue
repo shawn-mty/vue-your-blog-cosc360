@@ -61,6 +61,7 @@
             :submitStatus.sync="submitStatus"
             @clear="clear"
             @submit="submit"
+            :serverError="serverError"
           />
         </v-form>
       </v-col>
@@ -99,6 +100,7 @@ export default {
     minCharCount: 4,
     maxCharCount: 14,
     submitStatus: null,
+    serverError: null,
     imageRules: [
       value =>
         !value ||
@@ -183,9 +185,10 @@ export default {
             this.$router.push('/')
           })
           .catch(error => {
-            this.clear()
-            alert(error.response)
-            console.log('There was an error:', error.response)
+            console.log('There was an error:', error.response.data.meta.target)
+            this.submitStatus = 'SERVERERROR'
+            this.serverError =
+              'There was an error: ' + error.response.data.meta.target
           })
       }
     },

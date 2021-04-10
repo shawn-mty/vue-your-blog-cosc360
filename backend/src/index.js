@@ -30,7 +30,7 @@ app.use(
 )
 
 // create user in database and return response
-app.post('/create-user', upload.single('image'), async (req, res) => {
+app.post('/create-user', upload.single('image'), async (req, res, next) => {
   const hashedPass = bcrypt.hashSync(req.body.password, saltRounds)
   const dbData = {
     email: req.body.email,
@@ -38,10 +38,14 @@ app.post('/create-user', upload.single('image'), async (req, res) => {
     password: hashedPass,
     profileImagePath: req.file.path,
   }
-  const result = await prisma.user.create({
-    data: dbData,
-  })
-  res.json(result)
+  try {
+    const result = await prisma.user.create({
+      data: dbData,
+    })
+    res.json(result)
+  } catch (err) {
+    res.status(404).send(err)
+  }
 })
 
 // create post in database and return response

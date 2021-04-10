@@ -18,6 +18,9 @@
       Please fill the form correctly.
     </p>
     <p class="typo__p" v-if="submitStatus === 'PENDING'">Sending...</p>
+    <p class="typo__p error--text" v-if="submitStatus === 'SERVERERROR'">
+      {{ serverError }}
+    </p>
   </div>
 </template>
 
@@ -25,6 +28,9 @@
 export default {
   props: {
     submitStatus: {
+      type: String,
+    },
+    serverError: {
       type: String,
     },
   },
