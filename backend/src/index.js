@@ -127,7 +127,14 @@ app.get('/blog/:id', async (req, res) => {
       id: parseInt(id),
     },
   })
+  const imageData = await prisma.blog_imagepaths.findMany({
+    where: {
+      blogId: parseInt(id),
+    },
+  })
   console.log(blogData)
+  blogData.imagePaths = imageData.map((imageDatum) => imageDatum.imagePath)
+  console.log(imageData)
 
   res.send(blogData)
 })

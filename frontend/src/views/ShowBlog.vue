@@ -33,10 +33,11 @@ export default {
     EventService.getBlog(this.id) // <--- Send the prop id to our EventService
       .then(response => {
         const blogData = response.data
+        console.log(blogData)
         this.title = blogData.title
         let imageURLs = []
         let textSections = []
-        JSON.parse(blogData.imagePaths).map(imagePath => {
+        blogData.imagePaths.map(imagePath => {
           imageURLs.push(
             'http://localhost:3000/' + imagePath.replace(/\\/g, '/')
           )
