@@ -5,7 +5,6 @@
         <h1>Make a Blog</h1>
         <v-form>
           <BlogTitle :title.sync="title" />
-
           <div v-for="blogElement in blogElements" :key="blogElement.id">
             <v-row class="d-flex align-center mx-1 mt-1 mb-0">
               <tiptap-vuetify
@@ -124,42 +123,12 @@
 
             <v-spacer v-else />
             <v-spacer class="d-sm-none d-md-none d-lg-none d-xl-none" />
-            <v-speed-dial
-              class="ml-auto"
-              v-model="fab"
-              direction="left"
-              open-on-hover
-              transition="slide-x-reverse-transition"
-            >
-              <template v-slot:activator>
-                <v-btn v-model="fab" color="green" dark fab>
-                  <v-icon v-if="fab">
-                    mdi-close
-                  </v-icon>
-                  <v-icon v-else>
-                    mdi-plus
-                  </v-icon>
-                </v-btn>
-              </template>
-              <v-btn
-                @click="addBlogElement('image')"
-                fab
-                dark
-                small
-                color="orange"
-              >
-                <v-icon>mdi-image</v-icon>
-              </v-btn>
-              <v-btn
-                @click="addBlogElement('textArea')"
-                fab
-                dark
-                small
-                color="blue"
-              >
-                <v-icon>mdi-text-box</v-icon>
-              </v-btn>
-            </v-speed-dial>
+            <AddBlogElements
+              :blogElements.sync="blogElements"
+              :submitStatus.sync="submitStatus"
+              :maxTextAreas="maxTextAreas"
+              :maxImages="maxImages"
+            />
           </v-row>
 
           <v-btn
@@ -208,6 +177,7 @@ import {
   History,
 } from 'tiptap-vuetify'
 import BlogTitle from '@/components/BlogTitle'
+import AddBlogElements from './AddBlogElements.vue'
 
 export default {
   mixins: [validationMixin],
@@ -222,10 +192,9 @@ export default {
       },
     },
   },
-  components: { TiptapVuetify, BlogTitle },
+  components: { TiptapVuetify, BlogTitle, AddBlogElements },
   data: () => ({
     title: '',
-    uniqueId: -1,
     blogElements: [],
     maxTextAreaCharCount: 2047,
     maxTextAreas: 10,
@@ -237,7 +206,7 @@ export default {
         value.size < 4000000 ||
         'Avatar size should be less than 4 MB!',
     ],
-    fab: false,
+
     extensions: [
       History,
       Blockquote,
@@ -264,40 +233,6 @@ export default {
   }),
 
   methods: {
-    disallowTooManyBlogElements(blogElementType) {
-      let imageCount = 0
-      let textAreaCount = 0
-      this.blogElements.forEach(blogElement => {
-        if (blogElement.type === 'textArea') textAreaCount++
-        else if (blogElement.type === 'image') imageCount++
-      })
-
-      if (textAreaCount >= this.maxTextAreas && imageCount >= this.maxImages) {
-        this.submitStatus = 'TOOMANYTEXTAREASANDIMAGES'
-        return true
-      } else if (
-        textAreaCount === this.maxTextAreas &&
-        blogElementType === 'textArea'
-      ) {
-        this.submitStatus = 'TOOMANYTEXTAREAS'
-        return true
-      } else if (imageCount >= this.maxImages && blogElementType === 'image') {
-        this.submitStatus = 'TOOMANYIMAGES'
-        return true
-      } else {
-        this.submitStatus = ''
-        return false
-      }
-    },
-    addBlogElement(blogElementType) {
-      if (this.disallowTooManyBlogElements(blogElementType)) return
-      this.uniqueId++
-      this.blogElements.push({
-        type: blogElementType,
-        content: null,
-        id: this.uniqueId,
-      })
-    },
     textAreaErrors(blogElementId) {
       let blogElementIndex = this.blogElements.findIndex(blogElement => {
         return blogElement.id === blogElementId

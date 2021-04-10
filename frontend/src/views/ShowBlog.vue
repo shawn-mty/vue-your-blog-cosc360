@@ -39,7 +39,6 @@ export default {
     EventService.getBlog(this.id) // <--- Send the prop id to our EventService
       .then(response => {
         const blogData = response.data
-
         this.title = blogData.title
         let imageURLs = []
         blogData.imagePaths.map(imagePath => {
