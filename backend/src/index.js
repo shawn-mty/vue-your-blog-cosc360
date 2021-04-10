@@ -74,12 +74,24 @@ app.post('/create-user', upload.single('image'), async (req, res) => {
 // create post in database and return response
 app.post('/create-blog', upload.array('images'), async (req, res) => {
   const textAreas = req.body.textAreas
-  const images = req.files
   const blogElementTypesOrderString = req.body.blogElementTypesOrder
+
+  const images = req.files
+
+  const imagePaths = images
+    ? images.map((image) => {
+        console.log('image path is ' + image.path)
+        return { imagePath: image.path }
+      })
+    : []
+
   const dbData = {
     title: req.body.title,
     orderOfElements: blogElementTypesOrderString,
     user: { connect: { id: 1 } }, // TODO add actual user after login feature built
+    blog_imagepaths: {
+      create: imagePaths,
+    },
   }
 
   if (typeof textAreas === 'string') dbData.textArea0 = textAreas
@@ -88,15 +100,6 @@ app.post('/create-blog', upload.array('images'), async (req, res) => {
       dbData['textArea' + textAreaIndex] = textArea
     })
   }
-
-  const imagePaths = []
-  images.forEach((image, imageIndex) => {
-    console.log('image path is ' + image.path)
-    imagePaths.push(image.path)
-  })
-  const stringifiedImagePaths = JSON.stringify(imagePaths)
-  console.log(JSON.parse(stringifiedImagePaths))
-  dbData.imagePaths = JSON.stringify(imagePaths)
 
   console.log(dbData)
   const result = await prisma.blog.create({

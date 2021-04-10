@@ -39,16 +39,36 @@ model user {
 }
 
 model blog {
-  id              Int     @id @default(autoincrement())
-  textArea0       String? @db.VarChar(2047)
-  textArea1       String? @db.VarChar(2047)
-  textArea2       String? @db.VarChar(2047)
-  textArea3       String? @db.VarChar(2047)
-  orderOfElements String? @db.VarChar(255)
+  id              Int               @id @default(autoincrement())
+  textArea0       String?           @db.VarChar(2047)
+  textArea1       String?           @db.VarChar(2047)
+  textArea2       String?           @db.VarChar(2047)
+  textArea3       String?           @db.VarChar(2047)
+  orderOfElements String?           @db.VarChar(255)
   userId          Int
-  title           String? @db.VarChar(128)
-  imagePaths      String? @db.VarChar(2047)
-  user            user    @relation(fields: [userId], references: [id])
+  title           String?           @db.VarChar(128)
+  imagePaths      String?           @db.VarChar(2047)
+  user            user              @relation(fields: [userId], references: [id])
+  blog_imagepaths blog_imagepaths[]
+  blog_textarea   blog_textarea[]
 
   @@index([userId], name: "userId")
+}
+
+model blog_imagepaths {
+  id        Int    @id @default(autoincrement())
+  blogId    Int
+  imagePath String @db.VarChar(255)
+  blog      blog   @relation(fields: [blogId], references: [id])
+
+  @@index([blogId], name: "blogId_idx")
+}
+
+model blog_textarea {
+  id       Int    @id @default(autoincrement())
+  textArea String @db.VarChar(2047)
+  blogId   Int
+  blog     blog   @relation(fields: [blogId], references: [id])
+
+  @@index([blogId], name: "blogId_idx")
 }
