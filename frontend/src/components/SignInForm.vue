@@ -48,13 +48,10 @@
   </v-container>
 </template>
 
-
-
 <script>
 import { validationMixin } from 'vuelidate'
-import { required, maxLength, minLength} from 'vuelidate/lib/validators'
+import { required, maxLength, minLength } from 'vuelidate/lib/validators'
 import EventService from '@/services/EventService'
-isSignedIn = false;
 
 export default {
   mixins: [validationMixin],
@@ -70,6 +67,7 @@ export default {
     minCharCount: 4,
     maxCharCount: 14,
     submitStatus: null,
+    isSignedIn: false,
   }),
 
   computed: {
@@ -109,21 +107,25 @@ export default {
 
   methods: {
     submit() {
-      var bodyFormData = new FormData()
-      bodyFormData.append('username', this.username)
-      bodyFormData.append('password', this.password)
       this.$v.$touch()
       if (this.$v.$invalid) {
         this.submitStatus = 'ERROR'
       } else {
         // do your submit logic here
         this.submitStatus = 'PENDING'
-        EventService.fetchUser(bodyFormData)
+        EventService.fetchUser({
+          username: this.username,
+          password: this.password,
+        })
           .then(response => {
-            console.log(response)
-            
+            alert(response.data.validSignIn + ' that the signin was valid')
+            alert(response.data.signInAttemptInfo)
+            console.log(
+              response.data.validSignIn + ' that the signin was valid'
+            )
+            console.log(response.data.signInAttemptInfo)
             this.submitStatus = 'OK'
-            isSignedIn = true;
+            this.isSignedIn = true
           })
           .then(() => {
             this.$router.push('/')
