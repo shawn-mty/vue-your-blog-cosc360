@@ -100,6 +100,32 @@ app.get('/post/:id', async (req, res) => {
   res.json(post)
 })
 
+app.post('/signin', async (req, res) => {
+  try {
+    console.log(req.body.username)
+    let validSignIn = false
+    let signInAttemptInfo = ''
+    const dbUser = await prisma.user.findUnique({
+      where: {
+        username: req.body.username,
+      },
+    })
+    if (dbUser) {
+      validSignIn = bcrypt.compareSync(req.body.password, dbUser.password)
+      console.log('these passwords match? ' + validSignIn)
+      validSignIn
+        ? (signInAttemptInfo = 'User Authenticated successfully.')
+        : (signInAttemptInfo = 'Password is incorrect.')
+    } else {
+      console.log('username invalid')
+      signInAttemptInfo = 'username is invalid.'
+    }
+    res.send({ validSignIn: validSignIn, signInAttemptInfo: signInAttemptInfo })
+  } catch (err) {
+    res.status(500)
+  }
+})
+
 // display users
 // (async function () {
 //   const allUsers = await prisma.user.findMany({

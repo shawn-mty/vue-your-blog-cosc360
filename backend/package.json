@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "backend": "node src/index.js",
+    "backend": "nodemon src/index.js",
     "introspect": "npx prisma introspect",
     "generate": "npx prisma generate",
     "data-ui": "npx prisma studio"
@@ -19,6 +19,7 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prettier": "^3.3.1",
     "eslint-plugin-promise": "^4.3.1",
+    "nodemon": "^2.0.7",
     "prettier": "^2.2.1",
     "prisma": "^2.20.0"
   },
