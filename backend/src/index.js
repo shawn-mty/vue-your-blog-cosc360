@@ -100,6 +100,17 @@ app.get('/post/:id', async (req, res) => {
   res.json(post)
 })
 
+app.get('/user/:id', async (req, res) =>{
+  const {username} = req.params
+  const user = await prisma.user.findUnique({
+    where:{
+      username: username,
+    },
+  })
+  res.json(user)
+}
+)
+
 // display users
 // (async function () {
 //   const allUsers = await prisma.user.findMany({

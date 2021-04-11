@@ -48,10 +48,13 @@
   </v-container>
 </template>
 
+
+
 <script>
 import { validationMixin } from 'vuelidate'
 import { required, maxLength, minLength} from 'vuelidate/lib/validators'
 import EventService from '@/services/EventService'
+isSignedIn = false;
 
 export default {
   mixins: [validationMixin],
@@ -118,7 +121,9 @@ export default {
         EventService.fetchUser(bodyFormData)
           .then(response => {
             console.log(response)
+            
             this.submitStatus = 'OK'
+            isSignedIn = true;
           })
           .then(() => {
             this.$router.push('/')
