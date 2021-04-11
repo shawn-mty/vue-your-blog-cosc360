@@ -9,7 +9,7 @@
 
       <v-spacer></v-spacer>
 
-      <div>
+      <div v-if="!signedIn">
         <v-btn
           v-for="headerLink in headerLinks"
           :key="headerLink.index"
@@ -19,13 +19,46 @@
           class="my-2"
           :to="headerLink.path"
         >
-          <v-icon>
-            {{ headerLink.icon }}
-          </v-icon>
+          <v-icon class="mr-1"> {{ headerLink.icon }} </v-icon>
+          <div v-if="!$vuetify.breakpoint.xsOnly">
+            {{ headerLink.name }}
+          </div>
         </v-btn>
       </div>
 
-      <v-app-bar-nav-icon @click.stop="drawer = !drawer"
+      <v-dialog v-model="dialog" persistent max-width="400">
+        <template v-slot:activator="{ on, attrs }">
+          <v-app-bar-nav-icon>
+            <v-icon v-bind="attrs" v-on="on">
+              mdi-magnify
+            </v-icon>
+          </v-app-bar-nav-icon>
+        </template>
+        <v-card>
+          <v-chip-group color="primary" mandatory class=" ml-2">
+            <v-chip filter>Blogs</v-chip>
+            <v-chip filter>Comments</v-chip>
+          </v-chip-group>
+
+          <v-spacer></v-spacer>
+          <v-text-field
+            v-model="searchInput"
+            :loading="loading"
+            class="mx-4"
+            flat
+            hide-details
+            label="Enter Words Here"
+          ></v-text-field>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="primary" text @click="dialog = false">
+              <v-icon class="mr-2">mdi-magnify</v-icon> Search
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      <v-app-bar-nav-icon v-if="signedIn" @click.stop="drawer = !drawer"
         ><v-icon> mdi-account</v-icon></v-app-bar-nav-icon
       >
     </v-app-bar>
@@ -91,6 +124,8 @@ export default {
   name: 'App',
 
   data: () => ({
+    dialog: false,
+    search: null,
     signedIn: true,
     userLinks: [{ path: '/profile', name: 'Profile', icon: 'mdi-account' }],
     headerLinks: [
@@ -101,12 +136,27 @@ export default {
       { path: '/', name: 'See Blogs' },
       { path: '/make-a-blog', name: 'Make a Blog' },
     ],
+    searchItems: [],
     drawer: false,
     group: null,
+    searchInput: null,
+    loading: false,
   }),
   watch: {
     group() {
       this.drawer = false
+    },
+  },
+  methods: {
+    querySelections() {
+      //for the search bar
+      this.loading = true
+      // Simulated ajax query
+      setTimeout(() => {
+        //don't need to get search items
+
+        this.loading = false
+      }, 500)
     },
   },
 }
