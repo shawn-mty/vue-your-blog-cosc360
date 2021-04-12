@@ -22,5 +22,15 @@ The MyBlogPost website will allow registered users to create their own blog and 
 13) Run ``npx prisma generate`` to populate database with Prisma schema
 14) Run ``npm run backend`` to start up the backend listener on http://localhost:3000/
 
+
+
+## Features Implemented 
+1) Wireframe including planned layout, elements, sizes, placement
+2) Form validation with JavaScript
+3) Data storage in MySQL
+4) Responsive design philosophy
+5) User images (thumbnail) and profile stored in database
+6) Error handling
+
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
