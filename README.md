@@ -1,5 +1,5 @@
 ## Memebers
-Shawn Mountenay, Shreyasi Chauhan, Eloise Espenl, Shaya Selincourt 
+Shawn Mountenay, Shreyasi Chauhan, Eloise Espel, Shaya Selincourt 
 
 ## MyBlogPost
 The MyBlogPost website will allow registered users to create their own blog and unregistered users to view blog postings. The goal is to produce a similar type service that allows users to register, post blogs and make comments on blog entries. The system will be required to support multiple users. Additionally, unregistered users must be able to view the content but will not be able to edit or comment on posts. Blog comments need to be updated in real time.
