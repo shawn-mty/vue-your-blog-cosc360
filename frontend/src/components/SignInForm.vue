@@ -1,12 +1,13 @@
 <template>
   <v-container>
-    <v-row>
+    <v-row class=" justify-center d-flex">
       <v-col>
         <v-spacer />
-        <h1>Sign In</h1>
 
-        <v-form>
+        <v-form class="mx-auto" style="max-width: 600px;">
+          <h1>Sign In</h1>
           <v-text-field
+            autofocus
             v-model="username"
             :error-messages="usernameErrors"
             :counter="maxCharCount"
@@ -14,6 +15,7 @@
             required
             @input="$v.username.$touch()"
             @blur="$v.username.$touch()"
+            width="500"
           ></v-text-field>
 
           <v-text-field
@@ -26,6 +28,7 @@
             required
             @input="$v.password.$touch()"
             @blur="$v.password.$touch()"
+            v-on:keyup.enter="submit"
           ></v-text-field>
           <v-btn
             class="mr-4 primary"
@@ -133,15 +136,21 @@ export default {
               this.submitStatus = 'BADLOGIN'
               this.isSignedIn = false
             }
-          })
-          .then(() => {
             if (this.isSignedIn === true) {
               this.$emit('isSignedIn', this.isSignedIn)
+              this.$store.commit('setCurrentUser', {
+                id: response.data.userId,
+                username: this.username,
+                isSignedIn: this.isSignedIn,
+                profileImageURL:
+                  'http://localhost:3000/' +
+                  response.data.profileImagePath.replace(/\\/g, '/'),
+              })
+              this.$forceUpdate()
               this.$router.push('/')
             }
           })
           .catch(err => {
-            alert('Ha!')
             alert(err)
           })
       }

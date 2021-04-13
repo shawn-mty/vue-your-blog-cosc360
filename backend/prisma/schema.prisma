@@ -31,8 +31,9 @@ model user {
   name             String?  @db.VarChar(255)
   email            String   @unique @db.VarChar(255)
   username         String   @unique @db.VarChar(14)
-  password         String?  @db.VarChar(255)
-  profileImagePath String?  @db.VarChar(255)
+  password         String   @db.VarChar(255)
+  profileImagePath String   @db.VarChar(255)
+  isAdmin          Int?     @default(0) @db.TinyInt
   blog             blog[]
   post             post[]
   profile          profile?

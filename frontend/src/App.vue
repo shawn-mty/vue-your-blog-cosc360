@@ -9,23 +9,20 @@
 
       <v-spacer></v-spacer>
 
-      <div v-if="!signedIn">
-        <v-btn
-          v-for="headerLink in headerLinks"
-          :key="headerLink.index"
-          color="white"
-          text
-          rounded
-          class="my-2"
-          :to="headerLink.path"
-        >
-          <v-icon class="mr-1"> {{ headerLink.icon }} </v-icon>
-          <div v-if="!$vuetify.breakpoint.xsOnly">
-            {{ headerLink.name }}
-          </div>
-        </v-btn>
+      <div v-for="headerLink in headerLinks" :key="headerLink.index">
+        <div v-if="!currentUser.isSignedIn && headerLink.name !== 'Search'">
+          <v-btn color="white" text rounded class="my-2" :to="headerLink.path">
+            <v-app-bar-nav-icon>
+              <v-icon class="mr-1">
+                {{ headerLink.icon }}
+              </v-icon>
+            </v-app-bar-nav-icon>
+            <div v-if="!$vuetify.breakpoint.xsOnly">
+              {{ headerLink.name }}
+            </div>
+          </v-btn>
+        </div>
       </div>
-
       <v-dialog v-model="dialog" persistent max-width="400">
         <template v-slot:activator="{ on, attrs }">
           <v-app-bar-nav-icon>
@@ -58,7 +55,9 @@
         </v-card>
       </v-dialog>
 
-      <v-app-bar-nav-icon v-if="signedIn" @click.stop="drawer = !drawer"
+      <v-app-bar-nav-icon
+        v-if="currentUser.isSignedIn"
+        @click.stop="drawer = !drawer"
         ><v-icon> mdi-account</v-icon></v-app-bar-nav-icon
       >
     </v-app-bar>
@@ -74,9 +73,8 @@
         <template v-slot:prepend>
           <v-list-item two-line>
             <v-list-item-avatar>
-              <img src="https://randomuser.me/api/portraits/women/81.jpg" />
+              <img :src="currentUser.profileImageURL" />
             </v-list-item-avatar>
-
             <v-list-item-content>
               <v-list-item-title>A USER TODO</v-list-item-title>
               <v-list-item-subtitle>Logged In TODO</v-list-item-subtitle>
@@ -87,11 +85,15 @@
         <v-divider></v-divider>
 
         <v-list dense>
-          <v-list-item v-for="item in userLinks" :key="item.title">
+          <v-list-item
+            v-for="item in userLinks"
+            :key="item.name"
+            :to="item.path"
+            @click="handleUserLink(item.name)"
+          >
             <v-list-item-icon>
               <v-icon>{{ item.icon }}</v-icon>
             </v-list-item-icon>
-
             <v-list-item-content>
               <v-list-item-title>{{ item.name }}</v-list-item-title>
             </v-list-item-content>
@@ -103,38 +105,53 @@
     </v-main>
     <v-footer color="primary lighten-1" padless>
       <v-row justify="center" no-gutters>
-        <v-btn
-          v-for="footerLink in footerLinks"
-          :key="footerLink.index"
-          color="white"
-          text
-          rounded
-          class="my-2"
-          :to="footerLink.path"
-        >
-          {{ footerLink.name }}
-        </v-btn>
+        <div v-for="footerLink in footerLinks" :key="footerLink.index">
+          <v-btn
+            v-if="currentUser.isSignedIn && footerLink.key === 'make-a-blog'"
+            color="white"
+            text
+            rounded
+            class="my-2"
+            :to="footerLink.path"
+          >
+            {{ footerLink.name }}
+          </v-btn>
+          <v-btn
+            v-if="footerLink.key === 'see-blogs'"
+            color="white"
+            text
+            rounded
+            class="my-2"
+            :to="footerLink.path"
+          >
+            {{ footerLink.name }}
+          </v-btn>
+        </div>
       </v-row>
     </v-footer>
   </v-app>
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+import EventService from '@/services/EventService'
+
 export default {
   name: 'App',
-
   data: () => ({
     dialog: false,
     search: null,
-    signedIn: false,
-    userLinks: [{ path: '/profile', name: 'Profile', icon: 'mdi-account' }],
+    userLinks: [
+      { path: '/profile', name: 'Profile', icon: 'mdi-account' },
+      { path: '/', name: 'Logout', icon: 'mdi-logout-variant' },
+    ],
     headerLinks: [
       { path: '/signin', name: 'Sign In', icon: 'mdi-login-variant' },
       { path: '/register', name: 'Register', icon: 'mdi-account-plus' },
     ],
     footerLinks: [
-      { path: '/', name: 'See Blogs' },
-      { path: '/make-a-blog', name: 'Make a Blog' },
+      { path: '/', name: 'See Blogs', key: 'see-blogs' },
+      { path: '/make-a-blog', name: 'Make a Blog', key: 'make-a-blog' },
     ],
     searchItems: [],
     drawer: false,
@@ -158,6 +175,22 @@ export default {
         this.loading = false
       }, 500)
     },
+    handleUserLink(linkName) {
+      if (linkName === 'Logout') {
+        EventService.logout().then(() => {
+          this.$store.commit('setCurrentUser', {
+            id: '',
+            isSignedIn: false,
+            profileImagePath: '',
+            username: '',
+          })
+          this.drawer = false
+        })
+      }
+    },
+  },
+  computed: {
+    ...mapGetters({ currentUser: 'getCurrentUserData' }),
   },
 }
 </script>

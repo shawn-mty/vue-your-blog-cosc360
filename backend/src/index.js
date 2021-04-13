@@ -54,7 +54,7 @@ app.post('/create-user', upload.single('image'), async (req, res, next) => {
     username: req.body.username,
     password: hashedPass,
     profileImagePath: req.file.path,
-    isAdmin: false,
+    isAdmin: 0,
   }
   try {
     const result = await prisma.user.create({
@@ -122,6 +122,7 @@ app.delete('/post/:id', async (req, res) => {
 app.post('/signin', async (req, res) => {
   try {
     console.log(req.body.username)
+    console.log(req.body.password)
     let validSignIn = false
     let signInAttemptInfo = ''
 
@@ -135,14 +136,14 @@ app.post('/signin', async (req, res) => {
       validSignIn = bcrypt.compareSync(req.body.password, dbUser.password)
       console.log('these passwords match? ' + validSignIn)
       if (validSignIn) {
-        signInAttemptInfo = 'User Authenticated successfully.'
+        signInAttemptInfo = 'User Authenticated Successfully.'
         req.session.authenticatedUser = dbUser.id
       } else {
-        signInAttemptInfo = 'Password is incorrect.'
+        signInAttemptInfo = 'Password is Incorrect.'
       }
     } else {
       console.log('username invalid')
-      signInAttemptInfo = 'username is invalid.'
+      signInAttemptInfo = 'Username is Invalid.'
     }
 
     res.send({
@@ -150,10 +151,16 @@ app.post('/signin', async (req, res) => {
       signInAttemptInfo: signInAttemptInfo,
       userId: dbUser ? dbUser.id : false,
       isAdmin: dbUser ? dbUser.isAdmin : false,
+      profileImagePath: dbUser ? dbUser.profileImagePath : false,
     })
   } catch (err) {
     res.status(500)
   }
+})
+
+app.get('/logout', async (req, res) => {
+  req.session.authenticatedUser = undefined
+  res.send('logout successful')
 })
 
 // return blog with a given slug id

@@ -33,6 +33,10 @@ export default {
     return apiClientJson.post('/signin/', userData)
   },
 
+  logout() {
+    return apiClientJson.get('/logout')
+  },
+
   createBlog(blogData) {
     return apiClientMulti.post('/create-blog', blogData)
   },

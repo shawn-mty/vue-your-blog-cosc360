@@ -1,10 +1,9 @@
 <template>
   <v-container>
     <v-row>
-      <v-col class="justify-center w-50">
-        <h1>Register</h1>
-
-        <v-form>
+      <v-col>
+        <v-form style="max-width:600px;" class="mx-auto">
+          <h1>Register</h1>
           <v-text-field
             v-model="username"
             :error-messages="usernameErrors"
@@ -181,9 +180,37 @@ export default {
         EventService.createUser(bodyFormData)
           .then(() => {
             this.submitStatus = 'OK'
-          })
-          .then(() => {
-            this.$router.push('/')
+            EventService.checkCredentials({
+              username: this.username,
+              password: this.password,
+            })
+              .then(response => {
+                if (response.data.validSignIn) {
+                  this.submitStatus = 'OK'
+                  this.isSignedIn = true
+                } else {
+                  this.isSignedIn = false
+                  alert(
+                    'Error, could not sign in after Registration, please contact admin'
+                  )
+                }
+                if (this.isSignedIn === true) {
+                  this.$emit('isSignedIn', this.isSignedIn)
+                  this.$store.commit('setCurrentUser', {
+                    id: response.data.userId,
+                    username: this.username,
+                    isSignedIn: this.isSignedIn,
+                    profileImageURL:
+                      'http://localhost:3000/' +
+                      response.data.profileImagePath.replace(/\\/g, '/'),
+                  })
+                  this.$forceUpdate()
+                  this.$router.push('/')
+                }
+              })
+              .catch(err => {
+                alert(err)
+              })
           })
           .catch(error => {
             console.log('There was an error:', error.response.data.meta.target)
