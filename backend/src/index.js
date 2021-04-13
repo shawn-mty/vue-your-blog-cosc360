@@ -3,7 +3,7 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const cors = require('cors')
 const { PrismaClient } = require('@prisma/client')
-
+const session = require('express-session')
 const bcrypt = require('bcrypt')
 const saltRounds = 10
 const serveIndex = require('serve-index')
@@ -19,8 +19,25 @@ const serveIndex = require('serve-index')
 
 const prisma = new PrismaClient()
 const app = express()
+app.use(
+  session({
+    secret: 'meow-meow-meow',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      httpOnly: false,
+      secure: false,
+      maxAge: 720000,
+    },
+  })
+)
 
-app.use(cors())
+app.use(
+  cors({
+    origin: 'http://localhost:8080',
+    credentials: true,
+  })
+)
 app.use(bodyParser.json())
 const path = require('path')
 app.use(
@@ -37,6 +54,7 @@ app.post('/create-user', upload.single('image'), async (req, res, next) => {
     username: req.body.username,
     password: hashedPass,
     profileImagePath: req.file.path,
+    isAdmin: false,
   }
   try {
     const result = await prisma.user.create({
@@ -106,22 +124,33 @@ app.post('/signin', async (req, res) => {
     console.log(req.body.username)
     let validSignIn = false
     let signInAttemptInfo = ''
+
     const dbUser = await prisma.user.findUnique({
       where: {
         username: req.body.username,
       },
     })
+
     if (dbUser) {
       validSignIn = bcrypt.compareSync(req.body.password, dbUser.password)
       console.log('these passwords match? ' + validSignIn)
-      validSignIn
-        ? (signInAttemptInfo = 'User Authenticated successfully.')
-        : (signInAttemptInfo = 'Password is incorrect.')
+      if (validSignIn) {
+        signInAttemptInfo = 'User Authenticated successfully.'
+        req.session.authenticatedUser = dbUser.id
+      } else {
+        signInAttemptInfo = 'Password is incorrect.'
+      }
     } else {
       console.log('username invalid')
       signInAttemptInfo = 'username is invalid.'
     }
-    res.send({ validSignIn: validSignIn, signInAttemptInfo: signInAttemptInfo })
+
+    res.send({
+      validSignIn: validSignIn,
+      signInAttemptInfo: signInAttemptInfo,
+      userId: dbUser ? dbUser.id : false,
+      isAdmin: dbUser ? dbUser.isAdmin : false,
+    })
   } catch (err) {
     res.status(500)
   }

@@ -15,10 +15,12 @@
             @input="$v.username.$touch()"
             @blur="$v.username.$touch()"
           ></v-text-field>
+
           <v-text-field
             v-model="password"
             :error-messages="passwordErrors"
             :counter="maxCharCount"
+            class="mb-2"
             label="Password"
             type="password"
             required
@@ -39,10 +41,13 @@
           <p class="typo__p" v-if="submitStatus === 'OK'">
             Thanks for your submission!
           </p>
-          <p class="typo__p" v-if="submitStatus === 'ERROR'">
+          <p class="typo__p error--text" v-if="submitStatus === 'ERROR'">
             Please fill the form correctly.
           </p>
           <p class="typo__p" v-if="submitStatus === 'PENDING'">Sending...</p>
+          <p class="typo__p error--text" v-if="submitStatus === 'BADLOGIN'">
+            {{ loginError }}
+          </p>
         </v-form>
       </v-col>
     </v-row>
@@ -69,6 +74,7 @@ export default {
     maxCharCount: 14,
     submitStatus: null,
     isSignedIn: false,
+    loginError: '',
   }),
 
   computed: {
@@ -119,17 +125,24 @@ export default {
           password: this.password,
         })
           .then(response => {
-            alert(response.data.validSignIn + ' that the signin was valid')
-            alert(response.data.signInAttemptInfo)
-            console.log(
-              response.data.validSignIn + ' that the signin was valid'
-            )
-            console.log(response.data.signInAttemptInfo)
-            this.submitStatus = 'OK'
-            this.isSignedIn = true
+            if (response.data.validSignIn) {
+              this.submitStatus = 'OK'
+              this.isSignedIn = true
+            } else {
+              this.loginError = response.data.signInAttemptInfo
+              this.submitStatus = 'BADLOGIN'
+              this.isSignedIn = false
+            }
           })
           .then(() => {
-            this.$router.push('/')
+            if (this.isSignedIn === true) {
+              this.$emit('isSignedIn', this.isSignedIn)
+              this.$router.push('/')
+            }
+          })
+          .catch(err => {
+            alert('Ha!')
+            alert(err)
           })
       }
     },

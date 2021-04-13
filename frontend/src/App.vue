@@ -126,7 +126,7 @@ export default {
   data: () => ({
     dialog: false,
     search: null,
-    signedIn: true,
+    signedIn: false,
     userLinks: [{ path: '/profile', name: 'Profile', icon: 'mdi-account' }],
     headerLinks: [
       { path: '/signin', name: 'Sign In', icon: 'mdi-login-variant' },

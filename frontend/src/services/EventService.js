@@ -11,7 +11,7 @@ const apiClientMulti = axios.create({
 })
 const apiClientJson = axios.create({
   baseURL: `http://localhost:3000`,
-  withCredentials: false, // This is the default
+  withCredentials: true, // This is the default
   headers: {
     Accept: 'application/json',
     'Content-Type': 'application/json',
