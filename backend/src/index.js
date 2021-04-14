@@ -203,7 +203,8 @@ app.get('/blog/:id', async (req, res) => {
 
 const extractText = (htmlString) => {
   const dom = new JSDOM(htmlString)
-  const blogText = dom.window.document.body.textContent.substring(0, 50) + '...'
+  const blogText =
+    dom.window.document.body.textContent.substring(0, 150) + '...'
   return blogText
 }
 
