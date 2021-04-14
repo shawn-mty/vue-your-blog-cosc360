@@ -149,11 +149,20 @@ export default {
     submit() {
       this.$v.$touch()
       let textAreaCount = 0
+      let imageCount = 0
       this.blogElements.forEach(blogElement => {
         if (blogElement.type === 'textArea') textAreaCount++
+        if (blogElement.type === 'image') imageCount++
       })
-      if (textAreaCount === 0) {
+
+      if (textAreaCount === 0 && imageCount === 0) {
+        this.submitStatus = 'NOTEXTAREASORIMAGES'
+        return
+      } else if (textAreaCount === 0) {
         this.submitStatus = 'NOTEXTAREAS'
+        return
+      } else if (imageCount === 0) {
+        this.submitStatus = 'NOIMAGES'
         return
       }
       if (this.$v.$invalid) {

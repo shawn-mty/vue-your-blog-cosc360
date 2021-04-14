@@ -76,8 +76,8 @@
               <img :src="currentUser.profileImageURL" />
             </v-list-item-avatar>
             <v-list-item-content>
-              <v-list-item-title>A USER TODO</v-list-item-title>
-              <v-list-item-subtitle>Logged In TODO</v-list-item-subtitle>
+              <v-list-item-title>{{ currentUser.username }}</v-list-item-title>
+              <v-list-item-subtitle></v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
         </template>

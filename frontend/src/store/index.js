@@ -25,7 +25,7 @@ export default new Vuex.Store({
   modules: {},
   getters: {
     getCurrentUserData: state => {
-      state.currentUser = cookies.get('userData')
+      if (cookies.get('userData')) state.currentUser = cookies.get('userData')
       return state.currentUser
     },
   },

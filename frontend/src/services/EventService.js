@@ -19,9 +19,6 @@ const apiClientJson = axios.create({
 })
 
 export default {
-  // getEvents() {
-  //   return apiClient.get('/events')
-  // },
   getBlog(id) {
     return apiClientMulti.get('/blog/' + id)
   },
@@ -40,4 +37,8 @@ export default {
   createBlog(blogData) {
     return apiClientMulti.post('/create-blog', blogData)
   },
+}
+
+export const getBlogs = () => {
+  return apiClientJson.get('/blogs')
 }

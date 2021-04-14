@@ -7,6 +7,8 @@ const session = require('express-session')
 const bcrypt = require('bcrypt')
 const saltRounds = 10
 const serveIndex = require('serve-index')
+const jsdom = require('jsdom')
+const { JSDOM } = jsdom
 
 // // check if passwords match
 // console.log(
@@ -56,10 +58,12 @@ app.post('/create-user', upload.single('image'), async (req, res, next) => {
     profileImagePath: req.file.path,
     isAdmin: 0,
   }
+
   try {
     const result = await prisma.user.create({
       data: dbData,
     })
+
     res.json(result)
   } catch (err) {
     res.status(500).send(err)
@@ -192,6 +196,49 @@ app.get('/blog/:id', async (req, res) => {
     }
 
     res.send(blogData)
+  } catch (err) {
+    res.status(500).send(err)
+  }
+})
+
+const extractText = (htmlString) => {
+  const dom = new JSDOM(htmlString)
+  const blogText = dom.window.document.body.textContent.substring(0, 50) + '...'
+  return blogText
+}
+
+app.get('/blogs', async (req, res) => {
+  try {
+    const blogData = await prisma.blog.findMany()
+    const blogResponse = []
+
+    blogData.forEach(async (blog, index, blogs) => {
+      const imageRecord = await prisma.blog_imagepaths.findFirst({
+        where: {
+          blogId: parseInt(blog.id),
+        },
+      })
+
+      const imagePath = (await imageRecord) ? imageRecord.imagePath : ''
+
+      const textAreaRecord = await prisma.blog_textareas.findFirst({
+        where: {
+          blogId: parseInt(blog.id),
+        },
+      })
+
+      await blogResponse.push({
+        id: blog.id,
+        title: blog.title,
+        imagePath: imagePath,
+        textArea: extractText(textAreaRecord.textArea),
+      })
+
+      if (index === blogs.length - 1) {
+        res.send(blogResponse)
+        console.log(' ')
+      }
+    })
   } catch (err) {
     res.status(500).send(err)
   }
