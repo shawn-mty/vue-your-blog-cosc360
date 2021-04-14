@@ -1,5 +1,5 @@
 <template>
-  <v-container class="d-flex justify-center  align-content-space-between my-5 ">
+  <v-container class="d-flex justify-center   my-5 ">
     <v-row wrap>
       <v-col
         v-for="blog in blogs"
