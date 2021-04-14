@@ -1,9 +1,18 @@
 <template>
   <v-container class="mt-5">
     <v-row>
-      <h3 class="secondary--text font-weight-bold">Comments</h3>
-      TODO I SHOULD BE COLLAPSIBLE
-      <v-list three-line v-for="item in comments" :key="item.index">
+      <v-btn
+        @click="commentToggle = !commentToggle"
+        class="secondary--text font-weight-bold mb-3"
+        >Comments</v-btn
+      >
+
+      <transition-group
+        v-show="commentToggle"
+        three-line
+        v-for="item in comments"
+        :key="item.index"
+      >
         <v-list-item :key="item.username">
           <v-list-item-avatar>
             <v-img :src="item.avatar"></v-img>
@@ -15,7 +24,7 @@
             <v-list-item-subtitle v-html="item.time"></v-list-item-subtitle>
           </v-list-item-content>
         </v-list-item>
-      </v-list>
+      </transition-group>
     </v-row>
   </v-container>
 </template>
@@ -25,6 +34,7 @@ export default {
   created() {},
   data() {
     return {
+      commentToggle: true,
       comments: [
         {
           username: 'EpicPerson123',

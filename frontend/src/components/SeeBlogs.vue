@@ -8,7 +8,7 @@
         cols="12"
         class="d-flex justify-center"
       >
-        <v-card class="mx-auto" width="400">
+        <v-card style="height:fit-content;" class="mx-auto" width="400">
           <v-img
             @click="goToBlog(blog.id)"
             class="white--text align-end secondary lighten-4"
@@ -37,7 +37,6 @@
           <v-expand-transition>
             <div v-show="blog.show">
               <v-divider></v-divider>
-
               <v-card-text>
                 {{ blog.textArea }}
               </v-card-text>
