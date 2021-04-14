@@ -28,7 +28,7 @@
             required
             @input="$v.password.$touch()"
             @blur="$v.password.$touch()"
-            v-on:keyup.enter="submit"
+            @keyup.enter="submit"
           ></v-text-field>
           <v-btn
             class="mr-4 primary"

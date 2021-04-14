@@ -2,6 +2,7 @@
   <v-container class="mt-5">
     <v-row>
       <h3 class="secondary--text font-weight-bold">Comments</h3>
+      TODO I SHOULD BE COLLAPSIBLE
       <v-list three-line v-for="item in comments" :key="item.index">
         <v-list-item :key="item.username">
           <v-list-item-avatar>

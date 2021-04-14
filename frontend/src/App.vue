@@ -143,6 +143,7 @@ export default {
     search: null,
     userLinks: [
       { path: '/profile', name: 'Profile', icon: 'mdi-account' },
+      { path: '/admin', name: 'Admin', icon: 'mdi-cog' },
       { path: '/', name: 'Logout', icon: 'mdi-logout-variant' },
     ],
     headerLinks: [
