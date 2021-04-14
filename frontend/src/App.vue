@@ -14,12 +14,13 @@
     </v-main>
     <v-footer color="primary lighten-1" padless>
       <v-row justify="center" no-gutters>
-        <v-btn
+        <v-btn 
           v-for="link in links"
           :key="link.index"
           color="white"
           text
           rounded
+          @click="changePage"
           class="my-2"
           :to="link.path"
         >
@@ -41,6 +42,14 @@ export default {
       { path: '/make-a-blog', name: 'Make a Blog' },
     ],
   }),
+
+  methods:{
+    changePage(){
+      const errors =[];
+      alert("Beware: You are being transfered to another page!");
+      return errors;
+    }
+  },
 }
 </script>
 <style>
