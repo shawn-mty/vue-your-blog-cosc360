@@ -211,23 +211,24 @@ app.get('/blogs', async (req, res) => {
   try {
     const blogData = await prisma.blog.findMany()
     const blogResponse = []
+    blogData.unshift({})
 
-    blogData.forEach(async (blog, index, blogs) => {
+    await blogData.reduce(async (memo, blog, index, blogs) => {
+      await memo
       const imageRecord = await prisma.blog_imagepaths.findFirst({
         where: {
           blogId: parseInt(blog.id),
         },
       })
 
-      const imagePath = (await imageRecord) ? imageRecord.imagePath : ''
+      const imagePath = imageRecord ? imageRecord.imagePath : ''
 
       const textAreaRecord = await prisma.blog_textareas.findFirst({
         where: {
           blogId: parseInt(blog.id),
         },
       })
-
-      await blogResponse.push({
+      blogResponse.push({
         id: blog.id,
         title: blog.title,
         imagePath: imagePath,
@@ -236,7 +237,6 @@ app.get('/blogs', async (req, res) => {
 
       if (index === blogs.length - 1) {
         res.send(blogResponse)
-        console.log(' ')
       }
     })
   } catch (err) {
