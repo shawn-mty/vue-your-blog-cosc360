@@ -4,6 +4,8 @@ import Home from '../views/Home.vue'
 import Register from '../views/Register.vue'
 import MakeABlog from '../views/MakeABlog.vue'
 import ShowBlog from '../views/ShowBlog.vue'
+import SignIn from '../views/SignIn.vue'
+import Profile from '../views/Profile.vue'
 
 Vue.use(VueRouter)
 
@@ -17,6 +19,16 @@ const routes = [
     path: '/register',
     name: 'Register',
     component: Register,
+  },
+  {
+    path: '/signin',
+    name: 'SignIn',
+    component: SignIn,
+  },
+  {
+    path: '/profile',
+    name: 'Profile',
+    component: Profile,
   },
   {
     path: '/make-a-blog',

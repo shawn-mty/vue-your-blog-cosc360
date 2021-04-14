@@ -3,10 +3,12 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const cors = require('cors')
 const { PrismaClient } = require('@prisma/client')
-
+const session = require('express-session')
 const bcrypt = require('bcrypt')
 const saltRounds = 10
 const serveIndex = require('serve-index')
+const jsdom = require('jsdom')
+const { JSDOM } = jsdom
 
 // // check if passwords match
 // console.log(
@@ -19,8 +21,25 @@ const serveIndex = require('serve-index')
 
 const prisma = new PrismaClient()
 const app = express()
+app.use(
+  session({
+    secret: 'meow-meow-meow',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      httpOnly: false,
+      secure: false,
+      maxAge: 720000,
+    },
+  })
+)
 
-app.use(cors())
+app.use(
+  cors({
+    origin: 'http://localhost:8080',
+    credentials: true,
+  })
+)
 app.use(bodyParser.json())
 const path = require('path')
 app.use(
@@ -37,11 +56,14 @@ app.post('/create-user', upload.single('image'), async (req, res, next) => {
     username: req.body.username,
     password: hashedPass,
     profileImagePath: req.file.path,
+    isAdmin: 0,
   }
+
   try {
     const result = await prisma.user.create({
       data: dbData,
     })
+
     res.json(result)
   } catch (err) {
     res.status(500).send(err)
@@ -101,7 +123,51 @@ app.delete('/post/:id', async (req, res) => {
   res.json(post)
 })
 
-// return post with a given id from slug
+app.post('/signin', async (req, res) => {
+  try {
+    console.log(req.body.username)
+    console.log(req.body.password)
+    let validSignIn = false
+    let signInAttemptInfo = ''
+
+    const dbUser = await prisma.user.findUnique({
+      where: {
+        username: req.body.username,
+      },
+    })
+
+    if (dbUser) {
+      validSignIn = bcrypt.compareSync(req.body.password, dbUser.password)
+      console.log('these passwords match? ' + validSignIn)
+      if (validSignIn) {
+        signInAttemptInfo = 'User Authenticated Successfully.'
+        req.session.authenticatedUser = dbUser.id
+      } else {
+        signInAttemptInfo = 'Password is Incorrect.'
+      }
+    } else {
+      console.log('username invalid')
+      signInAttemptInfo = 'Username is Invalid.'
+    }
+
+    res.send({
+      validSignIn: validSignIn,
+      signInAttemptInfo: signInAttemptInfo,
+      userId: dbUser ? dbUser.id : false,
+      isAdmin: dbUser ? dbUser.isAdmin : false,
+      profileImagePath: dbUser ? dbUser.profileImagePath : false,
+    })
+  } catch (err) {
+    res.status(500)
+  }
+})
+
+app.get('/logout', async (req, res) => {
+  req.session.authenticatedUser = undefined
+  res.send('logout successful')
+})
+
+// return blog with a given slug id
 app.get('/blog/:id', async (req, res) => {
   const { id } = req.params
   try {
@@ -130,6 +196,50 @@ app.get('/blog/:id', async (req, res) => {
     }
 
     res.send(blogData)
+  } catch (err) {
+    res.status(500).send(err)
+  }
+})
+
+const extractText = (htmlString) => {
+  const dom = new JSDOM(htmlString)
+  const blogText =
+    dom.window.document.body.textContent.substring(0, 150) + '...'
+  return blogText
+}
+
+app.get('/blogs', async (req, res) => {
+  try {
+    const blogData = await prisma.blog.findMany()
+    const blogResponse = []
+    blogData.unshift({})
+
+    await blogData.reduce(async (memo, blog, index, blogs) => {
+      await memo
+      const imageRecord = await prisma.blog_imagepaths.findFirst({
+        where: {
+          blogId: parseInt(blog.id),
+        },
+      })
+
+      const imagePath = imageRecord ? imageRecord.imagePath : ''
+
+      const textAreaRecord = await prisma.blog_textareas.findFirst({
+        where: {
+          blogId: parseInt(blog.id),
+        },
+      })
+      blogResponse.push({
+        id: blog.id,
+        title: blog.title,
+        imagePath: imagePath,
+        textArea: extractText(textAreaRecord.textArea),
+      })
+
+      if (index === blogs.length - 1) {
+        res.send(blogResponse)
+      }
+    })
   } catch (err) {
     res.status(500).send(err)
   }

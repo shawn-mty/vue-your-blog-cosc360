@@ -3,6 +3,7 @@ import App from './App.vue'
 import router from './router'
 import vuetify from './plugins/vuetify'
 import Vuelidate from 'vuelidate'
+import store from './store'
 import { TiptapVuetifyPlugin } from 'tiptap-vuetify'
 import 'tiptap-vuetify/dist/main.css'
 import 'vuetify/dist/vuetify.min.css'
@@ -10,6 +11,7 @@ import 'vuetify/dist/vuetify.min.css'
 Vue.config.productionTip = false
 
 new Vue({
+  store,
   router,
   vuetify,
   render: h => h(App),
