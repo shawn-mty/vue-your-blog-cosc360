@@ -113,6 +113,7 @@
             rounded
             class="my-2"
             :to="footerLink.path"
+            @click="changePage"
           >
             {{ footerLink.name }}
           </v-btn>
@@ -123,6 +124,7 @@
             rounded
             class="my-2"
             :to="footerLink.path"
+            @click="changePage"
           >
             {{ footerLink.name }}
           </v-btn>
@@ -188,6 +190,11 @@ export default {
           this.drawer = false
         })
       }
+    },
+    changePage() {
+      const errors = []
+      alert('Beware: You are being transfered to another page!')
+      return errors
     },
   },
   computed: {
