@@ -1,5 +1,5 @@
 <template>
-  <v-container class="blog">
+  <v-container class="blog ">
     <v-row class="d-flex justify-center my-5 mx-3">
       <h1 class="text-center">{{ title }}</h1>
     </v-row>
@@ -17,7 +17,7 @@
       />
     </v-row>
     <v-divider />
-    <v-row class="d-flex my-5 mx-3 ">
+    <v-row class="d-flex mb-5 mt-2 mx-3 ">
       <BlogComments />
     </v-row>
   </v-container>

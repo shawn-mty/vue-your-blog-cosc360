@@ -101,7 +101,7 @@
         </v-list>
       </v-navigation-drawer>
 
-      <router-view class="mt-2" />
+      <router-view />
     </v-main>
     <v-footer color="primary lighten-1" padless>
       <v-row justify="center" no-gutters>
