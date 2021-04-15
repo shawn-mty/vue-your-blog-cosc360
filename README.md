@@ -1,4 +1,4 @@
-## Memebers
+## Members
 Shawn Mountenay, Shreyasi Chauhan, Eloise Espel, Shaya Selincourt 
 
 ## MyBlogPost
