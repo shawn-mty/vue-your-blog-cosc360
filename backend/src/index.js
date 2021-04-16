@@ -156,6 +156,7 @@ app.post('/signin', async (req, res) => {
       userId: dbUser ? dbUser.id : false,
       isAdmin: dbUser ? dbUser.isAdmin : false,
       profileImagePath: dbUser ? dbUser.profileImagePath : false,
+      email: dbUser ? dbUser.email : false,
     })
   } catch (err) {
     res.status(500)
@@ -289,6 +290,40 @@ app.post('/create-comment', async (req, res) => {
       },
     })
     if (result) res.json({ success: true })
+  } catch (err) {
+    res.status(500).send(err)
+  }
+})
+
+app.post('/edit-profile', upload.single('newImage'), async (req, res, next) => {
+  const hashedPass = bcrypt.hashSync(req.body.newPassword, saltRounds)
+  const currentUser = await prisma.user.findUnique({
+    where: {
+      email: req.body.oldEmail,
+    },
+  })
+  const updateProfileData = {
+    email: req.body.newEmail ? req.body.newEmail : req.body.oldEmail,
+    username: req.body.newUsername
+      ? req.body.newUsername
+      : req.body.oldUsername,
+  }
+  if (req.file) {
+    updateProfileData.profileImagePath = req.file.path
+  }
+  if (bcrypt.compareSync(req.body.oldPassword, currentUser.password)) {
+    updateProfileData.password = hashedPass
+  }
+
+  try {
+    const result = await prisma.user.update({
+      where: {
+        email: req.body.oldEmail,
+      },
+      data: updateProfileData,
+    })
+    console.log(result)
+    res.json(result)
   } catch (err) {
     res.status(500).send(err)
   }

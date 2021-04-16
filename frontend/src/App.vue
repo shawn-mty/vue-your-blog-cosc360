@@ -23,7 +23,12 @@
           </v-btn>
         </div>
       </div>
-      <v-dialog v-model="dialog" persistent max-width="400">
+      <v-dialog
+        v-if="$route.path === '/'"
+        v-model="dialog"
+        persistent
+        max-width="400"
+      >
         <template v-slot:activator="{ on, attrs }">
           <v-app-bar-nav-icon>
             <v-icon v-bind="attrs" v-on="on">
@@ -84,7 +89,9 @@
             </v-list-item-avatar>
             <v-list-item-content>
               <v-list-item-title>{{ currentUser.username }}</v-list-item-title>
-              <v-list-item-subtitle></v-list-item-subtitle>
+              <v-list-item-subtitle>{{
+                currentUser.email
+              }}</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
         </template>
@@ -174,6 +181,7 @@ export default {
       this.drawer = false
     },
   },
+
   methods: {
     handleSearch() {
       this.dialog = false

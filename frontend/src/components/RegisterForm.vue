@@ -200,7 +200,7 @@ export default {
                     id: response.data.userId,
                     username: this.username,
                     isSignedIn: this.isSignedIn,
-                    profileImageURL: response.data.profileImagePath.replace(
+                    profileImagePath: response.data.profileImagePath.replace(
                       /\\/g,
                       '/'
                     ),

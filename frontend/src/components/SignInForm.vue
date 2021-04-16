@@ -146,6 +146,7 @@ export default {
                   /\\/g,
                   '/'
                 ),
+                email: response.data.email,
               })
               this.$forceUpdate()
               this.$router.push('/')
