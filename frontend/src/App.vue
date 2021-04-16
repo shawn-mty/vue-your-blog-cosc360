@@ -32,9 +32,8 @@
           </v-app-bar-nav-icon>
         </template>
         <v-card>
-          <v-chip-group color="primary" mandatory class=" ml-2">
+          <v-chip-group color="primary" mandatory class=" ml-3">
             <v-chip filter>Blogs</v-chip>
-            <v-chip filter>Comments</v-chip>
           </v-chip-group>
 
           <v-spacer></v-spacer>
@@ -48,7 +47,7 @@
           ></v-text-field>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="primary" text @click="dialog = false">
+            <v-btn color="primary" text @click="handleSearch()">
               <v-icon class="mr-2">mdi-magnify</v-icon> Search
             </v-btn>
           </v-card-actions>
@@ -74,6 +73,7 @@
           <v-list-item two-line>
             <v-list-item-avatar>
               <img
+                v-if="currentUser.profileImagePath"
                 :src="'http://localhost:3000/' + currentUser.profileImagePath"
               />
             </v-list-item-avatar>
@@ -170,6 +170,13 @@ export default {
     },
   },
   methods: {
+    handleSearch() {
+      this.dialog = false
+      console.log(this.searchInput)
+      this.$store.commit('setSearchInput', {
+        searchInput: this.searchInput,
+      })
+    },
     querySelections() {
       //for the search bar
       this.loading = true
