@@ -1,10 +1,9 @@
 <template>
   <v-container>
     <v-row>
-      <v-col class="justify-center w-50">
-        <h1>Register</h1>
-
-        <v-form>
+      <v-col>
+        <v-form style="max-width:600px;" class="mx-auto">
+          <h1>Register</h1>
           <v-text-field
             v-model="username"
             :error-messages="usernameErrors"
@@ -13,6 +12,7 @@
             required
             @input="$v.username.$touch()"
             @blur="$v.username.$touch()"
+            autofocus
           ></v-text-field>
           <v-text-field
             v-model="password"
@@ -32,16 +32,21 @@
             @input="$v.email.$touch()"
             @blur="$v.email.$touch()"
           ></v-text-field>
-          <v-file-input
-            v-model="image"
-            :rules="imageRules"
-            :error-messages="imageErrors"
-            placeholder="Insert Profile Pic"
-            accept="image/png, image/jpeg, image/bmp"
-            prepend-icon="mdi-camera"
-            label="Insert Profile Pic"
-            chips
-          ></v-file-input>
+          <v-row>
+            <v-file-input
+              class="mt-3 ml-2"
+              v-model="image"
+              :rules="imageRules"
+              :error-messages="imageErrors"
+              placeholder="Insert Profile Pic"
+              accept="image/png, image/jpeg, image/bmp"
+              prepend-icon="mdi-camera"
+              label="Insert Profile Pic"
+              chips
+            ></v-file-input>
+            <v-spacer />
+          </v-row>
+
           <v-checkbox
             v-model="checkbox"
             :error-messages="checkboxErrors"
@@ -51,24 +56,13 @@
             @blur="$v.checkbox.$touch()"
           ></v-checkbox>
 
-          <v-btn
-            class="mr-4 primary"
-            @click="submit"
-            :disabled="submitStatus === 'PENDING'"
-          >
-            submit
-          </v-btn>
-          <v-btn @click="clear">
-            clear
-          </v-btn>
           <div class="mt-5"></div>
-          <p class="typo__p" v-if="submitStatus === 'OK'">
-            Thanks for your submission!
-          </p>
-          <p class="typo__p" v-if="submitStatus === 'ERROR'">
-            Please fill the form correctly.
-          </p>
-          <p class="typo__p" v-if="submitStatus === 'PENDING'">Sending...</p>
+          <FormSubmitAndClear
+            :submitStatus.sync="submitStatus"
+            @clear="clear"
+            @submit="submit"
+            :serverError="serverError"
+          />
         </v-form>
       </v-col>
     </v-row>
@@ -79,8 +73,10 @@
 import { validationMixin } from 'vuelidate'
 import { required, maxLength, minLength, email } from 'vuelidate/lib/validators'
 import EventService from '@/services/EventService'
+import FormSubmitAndClear from './FormSubmitAndClear.vue'
 
 export default {
+  components: { FormSubmitAndClear },
   mixins: [validationMixin],
 
   validations: {
@@ -104,6 +100,7 @@ export default {
     minCharCount: 4,
     maxCharCount: 14,
     submitStatus: null,
+    serverError: null,
     imageRules: [
       value =>
         !value ||
@@ -116,7 +113,8 @@ export default {
     checkboxErrors() {
       const errors = []
       if (!this.$v.checkbox.$dirty) return errors
-      !this.$v.checkbox.checked && errors.push('You must agree to continue!')
+      !this.$v.checkbox.checked &&
+        errors.push('Please check the box to continue.')
       return errors
     },
     usernameErrors() {
@@ -124,11 +122,11 @@ export default {
       if (!this.$v.username.$dirty) return errors
       !this.$v.username.maxLength &&
         errors.push(
-          'Username must be at most ' + this.maxCharCount + ' characters long'
+          'Username must be at most ' + this.maxCharCount + ' characters long.'
         )
       !this.$v.username.minLength &&
         errors.push(
-          'Username must be at least ' + this.minCharCount + ' characters long'
+          'Username must be at least ' + this.minCharCount + ' characters long.'
         )
       !this.$v.username.required && errors.push('Username is required.')
       return errors
@@ -138,54 +136,88 @@ export default {
       if (!this.$v.password.$dirty) return errors
       !this.$v.password.maxLength &&
         errors.push(
-          'Password must be at most ' + this.maxCharCount + ' characters long'
+          'Password must be at most ' + this.maxCharCount + ' characters long.'
         )
       !this.$v.password.minLength &&
         errors.push(
-          'Password must be at least ' + this.minCharCount + ' characters long'
+          'Password must be at least ' + this.minCharCount + ' characters long.'
         )
       !this.$v.password.required && errors.push('Password is required.')
 
       if (this.password.includes(this.username))
-        errors.push('Username must not include password')
+        errors.push('Username must not include password.')
 
       return errors
     },
     emailErrors() {
       const errors = []
       if (!this.$v.email.$dirty) return errors
-      !this.$v.email.email && errors.push('Must be valid e-mail')
-      !this.$v.email.required && errors.push('E-mail is required')
+      !this.$v.email.email && errors.push('Must be valid e-mail.')
+      !this.$v.email.required && errors.push('E-mail is required.')
       return errors
     },
     imageErrors() {
       const errors = []
       if (!this.$v.image.$dirty) return errors
-      !this.$v.image.required && errors.push('Profile Pic is required')
+      !this.$v.image.required && errors.push('Profile Pic is required.')
       return errors
     },
   },
 
   methods: {
     submit() {
-      var bodyFormData = new FormData()
-      bodyFormData.append('username', this.username)
-      bodyFormData.append('password', this.password)
-      bodyFormData.append('email', this.email)
-      bodyFormData.append('image', this.image)
       this.$v.$touch()
       if (this.$v.$invalid) {
         this.submitStatus = 'ERROR'
       } else {
         // do your submit logic here
         this.submitStatus = 'PENDING'
+        var bodyFormData = new FormData()
+        bodyFormData.append('username', this.username)
+        bodyFormData.append('password', this.password)
+        bodyFormData.append('email', this.email)
+        bodyFormData.append('image', this.image)
         EventService.createUser(bodyFormData)
-          .then(response => {
-            console.log(response)
-            this.submitStatus = 'OK'
-          })
           .then(() => {
-            this.$router.push('/')
+            this.submitStatus = 'OK'
+            EventService.checkCredentials({
+              username: this.username,
+              password: this.password,
+            })
+              .then(response => {
+                if (response.data.validSignIn) {
+                  this.submitStatus = 'OK'
+                  this.isSignedIn = true
+                } else {
+                  this.isSignedIn = false
+                  alert(
+                    'Error, could not sign in after Registration, please contact admin'
+                  )
+                }
+                if (this.isSignedIn === true) {
+                  this.$emit('isSignedIn', this.isSignedIn)
+                  this.$store.commit('setCurrentUser', {
+                    id: response.data.userId,
+                    username: this.username,
+                    isSignedIn: this.isSignedIn,
+                    profileImagePath: response.data.profileImagePath.replace(
+                      /\\/g,
+                      '/'
+                    ),
+                  })
+                  this.$forceUpdate()
+                  this.$router.push('/')
+                }
+              })
+              .catch(err => {
+                alert(err)
+              })
+          })
+          .catch(error => {
+            console.log('There was an error:', error.response.data.meta.target)
+            this.submitStatus = 'SERVERERROR'
+            this.serverError =
+              'There was an error: ' + error.response.data.meta.target
           })
       }
     },
