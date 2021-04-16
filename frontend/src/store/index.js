@@ -17,7 +17,6 @@ export default new Vuex.Store({
   mutations: {
     setCurrentUser(state, userData) {
       state.currentUser = userData
-
       cookies.set('userData', userData)
     },
   },

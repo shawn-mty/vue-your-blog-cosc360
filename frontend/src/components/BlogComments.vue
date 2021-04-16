@@ -78,7 +78,6 @@ export default {
   },
   mounted() {
     this.currentUserComment.show = true
-    console.log(this.comments)
   },
   data() {
     return {
@@ -89,9 +88,6 @@ export default {
   },
   methods: {
     async submit() {
-      console.log(this.currentUser.isSignedIn)
-      console.log(this.commentToggle)
-      console.log(this.currentUserComment.show)
       if (
         this.currentUserComment.content &&
         this.currentUserComment.content.length <= 511 &&

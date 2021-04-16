@@ -62,7 +62,6 @@ export default {
     const blogResponse = await getBlogs()
     this.blogs = blogResponse.data
     this.blogs = this.blogs.map(blog => ({ ...blog, show: false }))
-    console.log(this.blogs)
   },
   methods: {
     goToBlog(id) {
