@@ -1,8 +1,9 @@
 <template>
   <v-container class="mt-5">
     <v-btn
+      v-if="comments.length > 0 || currentUser.isSignedIn"
       @click="commentToggle = !commentToggle"
-      class="secondary--text font-weight-bold mb-3"
+      class="secondary font-weight-bold mb-3"
       >Comments</v-btn
     >
     <v-row class="mt-5">
