@@ -204,6 +204,8 @@ export default {
                       /\\/g,
                       '/'
                     ),
+                    isAdmin: response.data.isAdmin,
+                    email: response.data.email,
                   })
                   this.$forceUpdate()
                   this.$router.push('/')

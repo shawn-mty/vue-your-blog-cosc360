@@ -94,7 +94,7 @@ app.post('/create-blog', upload.array('images'), async (req, res) => {
   const dbData = {
     title: req.body.title,
     orderOfElements: blogElementTypesOrderString,
-    user: { connect: { id: 1 } }, // TODO add actual user after login feature built
+    user: { connect: { username: req.body.username } }, // TODO add actual user after login feature built
     blog_imagepaths: {
       create: imagePaths,
     },
@@ -157,6 +157,7 @@ app.post('/signin', async (req, res) => {
       isAdmin: dbUser ? dbUser.isAdmin : false,
       profileImagePath: dbUser ? dbUser.profileImagePath : false,
       email: dbUser ? dbUser.email : false,
+      disabled: dbUser ? dbUser.disabled : false,
     })
   } catch (err) {
     res.status(500)
@@ -326,6 +327,88 @@ app.post('/edit-profile', upload.single('newImage'), async (req, res, next) => {
     res.json(result)
   } catch (err) {
     res.status(500).send(err)
+  }
+})
+
+app.post('/admin-search', async (req, res) => {
+  console.log(req.body)
+  const searchInput = req.body.searchInput
+
+  try {
+    if (req.body.searchType === 'username') {
+      const userData = await prisma.$queryRaw(
+        `SELECT * from user where username LIKE '%${searchInput}%'`
+      )
+
+      const usernameData = userData.map((userDatum) => {
+        return {
+          disabled: userDatum.disabled,
+          title: userDatum.username,
+          subtitle: '',
+          id: userDatum.id,
+        }
+      })
+
+      res.json({ matchWithInput: usernameData })
+    } else if (req.body.searchType === 'email') {
+      const userData = await prisma.$queryRaw(
+        `SELECT * from user where email LIKE '%${searchInput}%'`
+      )
+
+      const emailData = userData.map((userDatum) => {
+        return {
+          title: userDatum.email,
+          id: userDatum.id,
+          subtitle: userDatum.username,
+          disabled: userDatum.disabled,
+        }
+      })
+
+      res.json({ matchWithInput: emailData })
+    } else if (req.body.searchType === 'blog') {
+      const blogData = await prisma.$queryRaw(
+        `SELECT * from blog where title LIKE '%${searchInput}%'`
+      )
+
+      const titleData = blogData.map((blogDatum) => {
+        return { subtitle: blogDatum.title, id: blogDatum.userId }
+      })
+
+      const userIds = blogData.map((userDatum) => {
+        return userDatum.userId
+      })
+
+      let tempUserData
+      for (let i = 0; i < userIds.length; i++) {
+        const userId = userIds[i]
+        tempUserData = await prisma.$queryRaw(
+          `SELECT * from user where id=${userId}`
+        )
+        titleData[i].title = tempUserData[0].username
+        titleData[i].disabled = tempUserData[0].disabled
+      }
+      res.json({ matchWithInput: titleData })
+    } else {
+      throw new Error('Search type not found')
+    }
+  } catch (err) {
+    res.status(500).send(err)
+  }
+})
+
+app.post('/disable-or-enable', async (req, res) => {
+  console.log(req.body)
+  try {
+    await prisma.user.update({
+      where: {
+        id: req.body.userId,
+      },
+      data: { disabled: req.body.disable ? 1 : 0 },
+    })
+    res.send(true)
+  } catch (err) {
+    res.status(500).send(err)
+    console.log(err)
   }
 })
 

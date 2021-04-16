@@ -34,6 +34,7 @@ model user {
   password         String?  @db.VarChar(255)
   profileImagePath String?  @db.VarChar(255)
   isAdmin          Int?     @default(0) @db.TinyInt
+  disabled         Int?     @default(0) @db.TinyInt
   blog             blog[]
   post             post[]
   profile          profile?

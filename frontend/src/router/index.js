@@ -6,6 +6,7 @@ import MakeABlog from '../views/MakeABlog.vue'
 import ShowBlog from '../views/ShowBlog.vue'
 import SignIn from '../views/SignIn.vue'
 import Profile from '../views/Profile.vue'
+import Admin from '../views/Admin.vue'
 
 Vue.use(VueRouter)
 
@@ -29,6 +30,11 @@ const routes = [
     path: '/profile',
     name: 'Profile',
     component: Profile,
+  },
+  {
+    path: '/admin',
+    name: 'Admin',
+    component: Admin,
   },
   {
     path: '/make-a-blog',

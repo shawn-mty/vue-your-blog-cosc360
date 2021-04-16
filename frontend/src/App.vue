@@ -30,7 +30,7 @@
         max-width="400"
       >
         <template v-slot:activator="{ on, attrs }">
-          <v-app-bar-nav-icon>
+          <v-app-bar-nav-icon v-bind="attrs" v-on="on">
             <v-icon v-bind="attrs" v-on="on">
               mdi-magnify
             </v-icon>
@@ -98,7 +98,19 @@
 
         <v-divider></v-divider>
 
-        <v-list dense>
+        <v-list>
+          <v-list-item
+            :to="adminLink.path"
+            @click="handleUserLink(adminLink.name)"
+            v-if="currentUser.isAdmin && adminLink.name === 'Admin'"
+          >
+            <v-list-item-icon>
+              <v-icon>{{ adminLink.icon }}</v-icon>
+            </v-list-item-icon>
+            <v-list-item-content>
+              <v-list-item-title>{{ adminLink.name }}</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
           <v-list-item
             v-for="item in userLinks"
             :key="item.name"
@@ -159,9 +171,9 @@ export default {
     search: null,
     userLinks: [
       { path: '/profile', name: 'Profile', icon: 'mdi-account' },
-      { path: '/admin', name: 'Admin', icon: 'mdi-cog' },
       { path: '/', name: 'Logout', icon: 'mdi-logout-variant' },
     ],
+    adminLink: { path: '/admin', name: 'Admin', icon: 'mdi-cog' },
     headerLinks: [
       { path: '/signin', name: 'Sign In', icon: 'mdi-login-variant' },
       { path: '/register', name: 'Register', icon: 'mdi-account-plus' },
@@ -188,16 +200,7 @@ export default {
       this.$store.commit('setSearchInput', this.searchInput)
       this.searchInput = ''
     },
-    querySelections() {
-      //for the search bar
-      this.loading = true
-      // Simulated ajax query
-      setTimeout(() => {
-        //don't need to get search items
 
-        this.loading = false
-      }, 500)
-    },
     handleUserLink(linkName) {
       if (linkName === 'Logout') {
         EventService.logout().then(() => {
@@ -206,6 +209,8 @@ export default {
             isSignedIn: false,
             profileImagePath: '',
             username: '',
+            isAdmin: false,
+            email: '',
           })
           this.drawer = false
         })
