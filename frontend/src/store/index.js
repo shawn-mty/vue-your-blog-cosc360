@@ -13,11 +13,15 @@ export default new Vuex.Store({
       isSignedIn: false,
       profileImageURL: '',
     },
+    searchInput: '',
   },
   mutations: {
     setCurrentUser(state, userData) {
       state.currentUser = userData
       cookies.set('userData', userData)
+    },
+    setSearchInput(state, searchInput) {
+      state.searchInput = searchInput
     },
   },
   actions: {},
@@ -26,6 +30,11 @@ export default new Vuex.Store({
     getCurrentUserData: state => {
       if (cookies.get('userData')) state.currentUser = cookies.get('userData')
       return state.currentUser
+    },
+    getSearchInput: state => {
+      if (state.searchInput) {
+        return state.searchInput
+      }
     },
   },
 })

@@ -2,7 +2,7 @@
   <v-container class="d-flex justify-center   my-5 ">
     <v-row wrap>
       <v-col
-        v-for="blog in blogs"
+        v-for="blog in searchedBlogs"
         :key="blog.id"
         sm="4"
         cols="12"
@@ -50,11 +50,29 @@
 
 <script>
 import { getBlogs } from '@/services/EventService'
+import { mapGetters } from 'vuex'
 
 export default {
+  computed: {
+    ...mapGetters({ searchInput: 'getSearchInput' }),
+  },
+  watch: {
+    searchInput() {
+      if (this.searchInput) {
+        if (this.searchInput.length > 0) {
+          this.searchedBlogs = this.blogs.filter(blog =>
+            blog.title.toLowerCase().includes(this.searchInput)
+          )
+        }
+      } else {
+        this.searchedBlogs = this.blogs
+      }
+    },
+  },
   data() {
     return {
       blogs: [],
+      searchedBlogs: [],
       show: false,
     }
   },
@@ -62,6 +80,7 @@ export default {
     const blogResponse = await getBlogs()
     this.blogs = blogResponse.data
     this.blogs = this.blogs.map(blog => ({ ...blog, show: false }))
+    this.searchedBlogs = this.blogs
   },
   methods: {
     goToBlog(id) {

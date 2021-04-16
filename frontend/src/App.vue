@@ -38,6 +38,8 @@
 
           <v-spacer></v-spacer>
           <v-text-field
+            autofocus
+            @keyup.enter="handleSearch"
             v-model="searchInput"
             :loading="loading"
             class="mx-4"
@@ -47,7 +49,10 @@
           ></v-text-field>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="primary" text @click="handleSearch()">
+            <v-btn color="secondary" text @click="handleSearch">
+              <v-icon class="mr-2">mdi-autorenew</v-icon> Restore
+            </v-btn>
+            <v-btn color="primary" text @click="handleSearch">
               <v-icon class="mr-2">mdi-magnify</v-icon> Search
             </v-btn>
           </v-card-actions>
@@ -161,7 +166,7 @@ export default {
     searchItems: [],
     drawer: false,
     group: null,
-    searchInput: null,
+    searchInput: '',
     loading: false,
   }),
   watch: {
@@ -172,10 +177,8 @@ export default {
   methods: {
     handleSearch() {
       this.dialog = false
-      console.log(this.searchInput)
-      this.$store.commit('setSearchInput', {
-        searchInput: this.searchInput,
-      })
+      this.$store.commit('setSearchInput', this.searchInput)
+      this.searchInput = ''
     },
     querySelections() {
       //for the search bar
@@ -200,6 +203,7 @@ export default {
         })
       }
     },
+
     changePage() {
       const errors = []
       alert('Beware: You are being transfered to another page!')
