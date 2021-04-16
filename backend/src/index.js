@@ -157,6 +157,7 @@ app.post('/signin', async (req, res) => {
       isAdmin: dbUser ? dbUser.isAdmin : false,
       profileImagePath: dbUser ? dbUser.profileImagePath : false,
       email: dbUser ? dbUser.email : false,
+      disabled: dbUser ? dbUser.disabled : false,
     })
   } catch (err) {
     res.status(500)
@@ -332,7 +333,7 @@ app.post('/edit-profile', upload.single('newImage'), async (req, res, next) => {
 app.post('/admin-search', async (req, res) => {
   console.log(req.body)
   const searchInput = req.body.searchInput
-  const userData = []
+
   try {
     if (req.body.searchType === 'username') {
       const userData = await prisma.$queryRaw(
@@ -340,52 +341,74 @@ app.post('/admin-search', async (req, res) => {
       )
 
       const usernameData = userData.map((userDatum) => {
-        return userDatum.username
+        return {
+          disabled: userDatum.disabled,
+          title: userDatum.username,
+          subtitle: '',
+          id: userDatum.id,
+        }
       })
 
-      console.log({ userData: userData, matchWithInput: usernameData })
-      res.json({ userData: userData, matchWithInput: usernameData })
+      res.json({ matchWithInput: usernameData })
     } else if (req.body.searchType === 'email') {
       const userData = await prisma.$queryRaw(
         `SELECT * from user where email LIKE '%${searchInput}%'`
       )
 
       const emailData = userData.map((userDatum) => {
-        return userDatum.email
+        return {
+          title: userDatum.email,
+          id: userDatum.id,
+          subtitle: userDatum.username,
+          disabled: userDatum.disabled,
+        }
       })
 
-      console.log({ userData: userData, matchWithInput: emailData })
-      res.json({ userData: userData, matchWithInput: emailData })
+      res.json({ matchWithInput: emailData })
     } else if (req.body.searchType === 'blog') {
       const blogData = await prisma.$queryRaw(
         `SELECT * from blog where title LIKE '%${searchInput}%'`
       )
 
-      let tempUserData
-
-      const titleData = blogData.map((userDatum) => {
-        return userDatum.title
+      const titleData = blogData.map((blogDatum) => {
+        return { subtitle: blogDatum.title, id: blogDatum.userId }
       })
 
       const userIds = blogData.map((userDatum) => {
         return userDatum.userId
       })
-      const uniqueUserIds = [...new Set(userIds)]
-      console.log(uniqueUserIds)
-      for (let i = 0; i < uniqueUserIds.length; i++) {
-        const userId = uniqueUserIds[i]
+
+      let tempUserData
+      for (let i = 0; i < userIds.length; i++) {
+        const userId = userIds[i]
         tempUserData = await prisma.$queryRaw(
           `SELECT * from user where id=${userId}`
         )
-        userData.push(tempUserData[0])
+        titleData[i].title = tempUserData[0].username
+        titleData[i].disabled = tempUserData[0].disabled
       }
-      console.log({ userData: userData, matchWithInput: titleData })
-      res.json({ userData: userData, matchWithInput: titleData })
+      res.json({ matchWithInput: titleData })
     } else {
       throw new Error('Search type not found')
     }
   } catch (err) {
     res.status(500).send(err)
+  }
+})
+
+app.post('/disable-or-enable', async (req, res) => {
+  console.log(req.body)
+  try {
+    await prisma.user.update({
+      where: {
+        id: req.body.userId,
+      },
+      data: { disabled: req.body.disable ? 1 : 0 },
+    })
+    res.send(true)
+  } catch (err) {
+    res.status(500).send(err)
+    console.log(err)
   }
 })
 

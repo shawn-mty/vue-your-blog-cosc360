@@ -54,3 +54,7 @@ export const editProfile = profileData => {
 export const adminUserSearch = searchData => {
   return apiClientJson.post('/admin-search', searchData)
 }
+
+export const disable = disableData => {
+  return apiClientJson.post('/disable-or-enable', disableData)
+}

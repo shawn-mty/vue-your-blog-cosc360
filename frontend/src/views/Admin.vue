@@ -19,7 +19,7 @@
         >
           <v-chip :value="'username'" filter>Username</v-chip>
           <v-chip :value="'email'" filter>Email</v-chip>
-          <v-chip :value="'blog'" filter>Blog Title </v-chip>
+          <v-chip :value="'blog'" filter>Blog </v-chip>
         </v-chip-group>
 
         <v-spacer></v-spacer>
@@ -43,18 +43,38 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-    <v-row class="d-flex justify-center mt-5">
-      <ol>
-        <li>Enable/disable users</li>
-        <li>Edit/remove posts and comments</li>
-      </ol>
-    </v-row>
+
+    <v-list max-width="400" class="mx-auto ">
+      <v-list-item v-for="user in users" :key="user.index">
+        <v-list-item-title class="mr-5">{{ user.title }}</v-list-item-title>
+        <v-list-item-subtitle>
+          {{ user.subtitle }}
+        </v-list-item-subtitle>
+        <v-btn
+          v-if="!user.disabled"
+          @click="disableUser(user.id, user.disabled)"
+          small
+          class="error "
+        >
+          <v-icon>mdi-account-off</v-icon>
+        </v-btn>
+        <v-btn
+          v-if="user.disabled"
+          @click="disableUser(user.id, user.disabled)"
+          small
+          class="success "
+        >
+          <v-icon>mdi-account-check</v-icon>
+        </v-btn>
+      </v-list-item>
+    </v-list>
   </v-container>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
 import { adminUserSearch } from '@/services/EventService'
+import { disable } from '@/services/EventService'
 
 export default {
   data() {
@@ -62,6 +82,7 @@ export default {
       dialog: false,
       searchInput: '',
       searchType: '',
+      users: [],
     }
   },
   created() {},
@@ -69,16 +90,30 @@ export default {
     ...mapGetters({ user: 'getCurrentUserData' }),
   },
   methods: {
+    async disableUser(id, disabled) {
+      await disable({
+        userId: id,
+        disable: !disabled,
+      })
+
+      for (let i = 0; i < this.users.length; i++) {
+        if (this.users[i].id === id) {
+          this.users[i].disabled = !disabled
+        }
+      }
+    },
+
     handleSearch() {
       this.dialog = false
       this.userSearch()
       this.searchInput = ''
     },
     async userSearch() {
-      await adminUserSearch({
+      const adminSearchResults = await adminUserSearch({
         searchInput: this.searchInput,
         searchType: this.searchType,
       })
+      this.users = adminSearchResults.data.matchWithInput
     },
   },
 }

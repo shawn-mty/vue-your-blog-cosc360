@@ -51,6 +51,9 @@
           <p class="typo__p error--text" v-if="submitStatus === 'BADLOGIN'">
             {{ loginError }}
           </p>
+          <p class="typo__p error--text" v-if="submitStatus === 'DISABLED'">
+            {{ loginError }}
+          </p>
         </v-form>
       </v-col>
     </v-row>
@@ -128,6 +131,10 @@ export default {
           password: this.password,
         })
           .then(response => {
+            if (response.data.disabled) {
+              this.submitStatus = 'DISABLED'
+              throw new Error('Your account has been disabled')
+            }
             if (response.data.validSignIn) {
               this.submitStatus = 'OK'
               this.isSignedIn = true
@@ -154,7 +161,7 @@ export default {
             }
           })
           .catch(err => {
-            alert(err)
+            this.loginError = err
           })
       }
     },
