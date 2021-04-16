@@ -62,7 +62,7 @@
       >
     </v-app-bar>
 
-    <v-main>
+    <v-main class="mb-5 pb-5">
       <v-navigation-drawer
         style="z-index: 100"
         v-model="drawer"
@@ -105,7 +105,7 @@
 
       <router-view />
     </v-main>
-    <v-footer color="primary lighten-1" padless>
+    <v-footer fixed color="primary lighten-1" padless>
       <v-row justify="center" no-gutters>
         <div v-for="footerLink in footerLinks" :key="footerLink.index">
           <v-btn

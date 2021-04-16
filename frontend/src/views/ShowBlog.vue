@@ -41,7 +41,6 @@ export default {
             )
           })
           this.comments = blogData.blogComments
-          console.log(this.comments)
           const orderOfElements = JSON.parse(blogData.orderOfElements)
           for (let i = 0; i < orderOfElements.length; i++) {
             if (orderOfElements[i] === 'textArea') {
