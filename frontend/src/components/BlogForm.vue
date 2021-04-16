@@ -82,8 +82,12 @@ import BlogTextArea from './BlogTextArea.vue'
 import BlogTextAreaValidation from './BlogTextAreaValidation.vue'
 import BlogFormSubmitErrors from './BlogFormSubmitErrors.vue'
 import FormSubmitAndClear from './FormSubmitAndClear.vue'
+import { mapGetters } from 'vuex'
 
 export default {
+  computed: {
+    ...mapGetters({ currentUser: 'getCurrentUserData' }),
+  },
   components: {
     BlogTitle,
     AddBlogElements,
@@ -171,6 +175,7 @@ export default {
         this.submitStatus = 'PENDING'
         let bodyFormData = new FormData()
         bodyFormData.append('title', this.title)
+        bodyFormData.append('username', this.currentUser.username)
 
         let blogElementTypesOrder = []
         this.blogElements.forEach(blogElement => {

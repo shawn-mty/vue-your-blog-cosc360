@@ -50,3 +50,7 @@ export const createComment = commentData => {
 export const editProfile = profileData => {
   return apiClientMulti.post('/edit-profile', profileData)
 }
+
+export const adminUserSearch = searchData => {
+  return apiClientJson.post('/admin-search', searchData)
+}

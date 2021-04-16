@@ -147,6 +147,7 @@ export default {
                   '/'
                 ),
                 email: response.data.email,
+                isAdmin: response.data.isAdmin,
               })
               this.$forceUpdate()
               this.$router.push('/')

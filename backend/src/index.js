@@ -94,7 +94,7 @@ app.post('/create-blog', upload.array('images'), async (req, res) => {
   const dbData = {
     title: req.body.title,
     orderOfElements: blogElementTypesOrderString,
-    user: { connect: { id: 1 } }, // TODO add actual user after login feature built
+    user: { connect: { username: req.body.username } }, // TODO add actual user after login feature built
     blog_imagepaths: {
       create: imagePaths,
     },
@@ -324,6 +324,66 @@ app.post('/edit-profile', upload.single('newImage'), async (req, res, next) => {
     })
     console.log(result)
     res.json(result)
+  } catch (err) {
+    res.status(500).send(err)
+  }
+})
+
+app.post('/admin-search', async (req, res) => {
+  console.log(req.body)
+  const searchInput = req.body.searchInput
+  const userData = []
+  try {
+    if (req.body.searchType === 'username') {
+      const userData = await prisma.$queryRaw(
+        `SELECT * from user where username LIKE '%${searchInput}%'`
+      )
+
+      const usernameData = userData.map((userDatum) => {
+        return userDatum.username
+      })
+
+      console.log({ userData: userData, matchWithInput: usernameData })
+      res.json({ userData: userData, matchWithInput: usernameData })
+    } else if (req.body.searchType === 'email') {
+      const userData = await prisma.$queryRaw(
+        `SELECT * from user where email LIKE '%${searchInput}%'`
+      )
+
+      const emailData = userData.map((userDatum) => {
+        return userDatum.email
+      })
+
+      console.log({ userData: userData, matchWithInput: emailData })
+      res.json({ userData: userData, matchWithInput: emailData })
+    } else if (req.body.searchType === 'blog') {
+      const blogData = await prisma.$queryRaw(
+        `SELECT * from blog where title LIKE '%${searchInput}%'`
+      )
+
+      let tempUserData
+
+      const titleData = blogData.map((userDatum) => {
+        return userDatum.title
+      })
+
+      const userIds = blogData.map((userDatum) => {
+        return userDatum.userId
+      })
+      const uniqueUserIds = [...new Set(userIds)]
+      console.log(uniqueUserIds)
+      for (let i = 0; i < uniqueUserIds.length; i++) {
+        const userId = uniqueUserIds[i]
+        tempUserData = await prisma.$queryRaw(
+          `SELECT * from user where id=${userId}`
+        )
+        userData.push(tempUserData[0])
+      }
+      console.log({ userData: userData, matchWithInput: titleData })
+      res.json({ userData: userData, matchWithInput: titleData })
+    } else {
+      throw new Error('Search type not found')
+    }
   } catch (err) {
     res.status(500).send(err)
   }
