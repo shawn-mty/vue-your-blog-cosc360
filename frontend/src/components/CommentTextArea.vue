@@ -33,7 +33,7 @@ import {
 export default {
   props: {
     comment: {
-      type: String,
+      type: Object,
     },
   },
   created() {

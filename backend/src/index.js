@@ -186,12 +186,21 @@ app.get('/blog/:id', async (req, res) => {
         blogId: parseInt(id),
       },
     })
+    const blogCommentData = await prisma.blog_comments.findMany({
+      where: {
+        blogId: parseInt(id),
+      },
+    })
+
     if (blogData) {
       blogData.imagePaths = imagePathData
         ? imagePathData.map((imageDatum) => imageDatum.imagePath)
         : []
       blogData.textAreas = textAreaData
         ? textAreaData.map((textAreaDatum) => textAreaDatum.textArea)
+        : []
+      blogData.blogComments = blogCommentData
+        ? blogCommentData.map((blogCommentDatum) => blogCommentDatum.comment)
         : []
     }
 
@@ -240,6 +249,30 @@ app.get('/blogs', async (req, res) => {
         res.send(blogResponse)
       }
     })
+  } catch (err) {
+    res.status(500).send(err)
+  }
+})
+
+app.post('/create-comment', async (req, res) => {
+  console.log(req.body.comment)
+
+  const dbData = {
+    blog_comments: {
+      create: {
+        comment: req.body.comment,
+      },
+    },
+  }
+
+  try {
+    const result = await prisma.blog.update({
+      data: dbData,
+      where: {
+        id: parseInt(req.body.blogId),
+      },
+    })
+    if (result) res.json({ success: true })
   } catch (err) {
     res.status(500).send(err)
   }

@@ -44,5 +44,5 @@ export const getBlogs = () => {
 }
 
 export const createComment = commentData => {
-  return apiClientJson.post('/comment', commentData)
+  return apiClientJson.post('/create-comment', commentData)
 }

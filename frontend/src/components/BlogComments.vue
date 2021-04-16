@@ -44,6 +44,7 @@
 
 <script>
 import CommentTextArea from './CommentTextArea.vue'
+import { createComment } from '@/services/EventService'
 export default {
   components: { CommentTextArea },
   mounted() {
@@ -84,8 +85,14 @@ export default {
     }
   },
   methods: {
-    submit() {
-      alert(this.currentUserComment.content)
+    async submit() {
+      if (this.currentUserComment.content) {
+        const commentSent = await createComment({
+          comment: this.currentUserComment.content,
+          blogId: this.$route.params.id,
+        })
+        console.log(commentSent)
+      }
     },
   },
 }

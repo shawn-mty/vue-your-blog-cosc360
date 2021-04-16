@@ -31,8 +31,8 @@ model user {
   name             String?  @db.VarChar(255)
   email            String   @unique @db.VarChar(255)
   username         String   @unique @db.VarChar(14)
-  password         String   @db.VarChar(255)
-  profileImagePath String   @db.VarChar(255)
+  password         String?  @db.VarChar(255)
+  profileImagePath String?  @db.VarChar(255)
   isAdmin          Int?     @default(0) @db.TinyInt
   blog             blog[]
   post             post[]
@@ -45,6 +45,7 @@ model blog {
   userId          Int
   title           String?           @db.VarChar(128)
   user            user              @relation(fields: [userId], references: [id])
+  blog_comments   blog_comments[]
   blog_headers    blog_headers[]
   blog_imagepaths blog_imagepaths[]
   blog_textareas  blog_textareas[]
@@ -77,4 +78,13 @@ model blog_textareas {
   blog     blog   @relation(fields: [blogId], references: [id])
 
   @@index([blogId], name: "blogId_idx")
+}
+
+model blog_comments {
+  id      Int    @id @default(autoincrement())
+  comment String @db.VarChar(511)
+  blogId  Int
+  blog    blog   @relation(fields: [blogId], references: [id])
+
+  @@index([blogId], name: "blog_id_idx")
 }

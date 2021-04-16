@@ -46,7 +46,7 @@ export default {
             'http://localhost:3000/' + imagePath.replace(/\\/g, '/')
           )
         })
-
+        console.log(blogData.blogComments)
         const orderOfElements = JSON.parse(blogData.orderOfElements)
         for (let i = 0; i < orderOfElements.length; i++) {
           if (orderOfElements[i] === 'textArea') {
