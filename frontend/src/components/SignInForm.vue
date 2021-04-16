@@ -142,9 +142,10 @@ export default {
                 id: response.data.userId,
                 username: this.username,
                 isSignedIn: this.isSignedIn,
-                profileImageURL:
-                  'http://localhost:3000/' +
-                  response.data.profileImagePath.replace(/\\/g, '/'),
+                profileImagePath: response.data.profileImagePath.replace(
+                  /\\/g,
+                  '/'
+                ),
               })
               this.$forceUpdate()
               this.$router.push('/')

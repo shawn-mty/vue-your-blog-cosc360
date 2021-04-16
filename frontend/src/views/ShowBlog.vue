@@ -18,7 +18,7 @@
     </v-row>
     <v-divider />
     <v-row class="d-flex mb-5 mt-2 mx-3 ">
-      <BlogComments />
+      <BlogComments :comments="comments" @updatePage="getBlog()" />
     </v-row>
   </v-container>
 </template>
@@ -27,44 +27,52 @@
 import EventService from '@/services/EventService.js'
 import BlogComments from '../components/BlogComments.vue'
 export default {
+  methods: {
+    getBlog() {
+      this.blogElements = []
+      EventService.getBlog(this.id) // <--- Send the prop id to our EventService
+        .then(response => {
+          const blogData = response.data
+          this.title = blogData.title
+          let imageURLs = []
+          blogData.imagePaths.map(imagePath => {
+            imageURLs.push(
+              'http://localhost:3000/' + imagePath.replace(/\\/g, '/')
+            )
+          })
+          this.comments = blogData.blogComments
+          console.log(this.comments)
+          const orderOfElements = JSON.parse(blogData.orderOfElements)
+          for (let i = 0; i < orderOfElements.length; i++) {
+            if (orderOfElements[i] === 'textArea') {
+              this.blogElements.push({
+                type: 'textArea',
+                content: blogData.textAreas.shift(),
+              })
+            } else if (orderOfElements[i] === 'image') {
+              this.blogElements.push({
+                type: 'image',
+                content: imageURLs.shift(),
+              })
+            }
+          }
+        })
+        .catch(error => {
+          console.log('There was an error:', error.response)
+        })
+    },
+  },
   components: { BlogComments },
   props: ['id'],
   data() {
     return {
       title: '',
       blogElements: [],
+      comments: [],
     }
   },
   created() {
-    EventService.getBlog(this.id) // <--- Send the prop id to our EventService
-      .then(response => {
-        const blogData = response.data
-        this.title = blogData.title
-        let imageURLs = []
-        blogData.imagePaths.map(imagePath => {
-          imageURLs.push(
-            'http://localhost:3000/' + imagePath.replace(/\\/g, '/')
-          )
-        })
-        console.log(blogData.blogComments)
-        const orderOfElements = JSON.parse(blogData.orderOfElements)
-        for (let i = 0; i < orderOfElements.length; i++) {
-          if (orderOfElements[i] === 'textArea') {
-            this.blogElements.push({
-              type: 'textArea',
-              content: blogData.textAreas.shift(),
-            })
-          } else if (orderOfElements[i] === 'image') {
-            this.blogElements.push({
-              type: 'image',
-              content: imageURLs.shift(),
-            })
-          }
-        }
-      })
-      .catch(error => {
-        console.log('There was an error:', error.response)
-      })
+    this.getBlog()
   },
 }
 </script>

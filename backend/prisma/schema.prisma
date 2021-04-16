@@ -81,10 +81,13 @@ model blog_textareas {
 }
 
 model blog_comments {
-  id      Int    @id @default(autoincrement())
-  comment String @db.VarChar(511)
-  blogId  Int
-  blog    blog   @relation(fields: [blogId], references: [id])
+  id       Int    @id @default(autoincrement())
+  message  String @db.VarChar(511)
+  blogId   Int
+  username String @db.VarChar(14)
+  avatar   String @db.VarChar(255)
+  time     String @db.VarChar(255)
+  blog     blog   @relation(fields: [blogId], references: [id])
 
   @@index([blogId], name: "blog_id_idx")
 }

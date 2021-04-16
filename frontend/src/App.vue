@@ -73,7 +73,9 @@
         <template v-slot:prepend>
           <v-list-item two-line>
             <v-list-item-avatar>
-              <img :src="currentUser.profileImageURL" />
+              <img
+                :src="'http://localhost:3000/' + currentUser.profileImagePath"
+              />
             </v-list-item-avatar>
             <v-list-item-content>
               <v-list-item-title>{{ currentUser.username }}</v-list-item-title>
