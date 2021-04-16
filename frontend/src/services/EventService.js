@@ -46,3 +46,7 @@ export const getBlogs = () => {
 export const createComment = commentData => {
   return apiClientJson.post('/create-comment', commentData)
 }
+
+export const editProfile = profileData => {
+  return apiClientMulti.post('/edit-profile', profileData)
+}
