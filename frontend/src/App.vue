@@ -73,7 +73,9 @@
         <template v-slot:prepend>
           <v-list-item two-line>
             <v-list-item-avatar>
-              <img :src="currentUser.profileImageURL" />
+              <img
+                :src="'http://localhost:3000/' + currentUser.profileImagePath"
+              />
             </v-list-item-avatar>
             <v-list-item-content>
               <v-list-item-title>{{ currentUser.username }}</v-list-item-title>
@@ -101,7 +103,7 @@
         </v-list>
       </v-navigation-drawer>
 
-      <router-view class="mt-2" />
+      <router-view />
     </v-main>
     <v-footer color="primary lighten-1" padless>
       <v-row justify="center" no-gutters>

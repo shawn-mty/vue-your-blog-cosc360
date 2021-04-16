@@ -42,3 +42,7 @@ export default {
 export const getBlogs = () => {
   return apiClientJson.get('/blogs')
 }
+
+export const createComment = commentData => {
+  return apiClientJson.post('/create-comment', commentData)
+}

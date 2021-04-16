@@ -17,7 +17,6 @@ export default new Vuex.Store({
   mutations: {
     setCurrentUser(state, userData) {
       state.currentUser = userData
-      console.log(state.currentUser.profileImageURL)
       cookies.set('userData', userData)
     },
   },

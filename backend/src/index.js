@@ -186,12 +186,28 @@ app.get('/blog/:id', async (req, res) => {
         blogId: parseInt(id),
       },
     })
+    const blogCommentData = await prisma.blog_comments.findMany({
+      where: {
+        blogId: parseInt(id),
+      },
+    })
+
     if (blogData) {
       blogData.imagePaths = imagePathData
         ? imagePathData.map((imageDatum) => imageDatum.imagePath)
         : []
       blogData.textAreas = textAreaData
         ? textAreaData.map((textAreaDatum) => textAreaDatum.textArea)
+        : []
+      blogData.blogComments = blogCommentData
+        ? blogCommentData.map((blogCommentDatum) => {
+            return {
+              message: blogCommentDatum.message,
+              avatar: blogCommentDatum.avatar,
+              username: blogCommentDatum.username,
+              time: blogCommentDatum.time,
+            }
+          })
         : []
     }
 
@@ -240,6 +256,39 @@ app.get('/blogs', async (req, res) => {
         res.send(blogResponse)
       }
     })
+  } catch (err) {
+    res.status(500).send(err)
+  }
+})
+
+app.post('/create-comment', async (req, res) => {
+  console.log(req.body.message)
+
+  const dbData = {
+    blog_comments: {
+      create: {
+        username: req.body.username,
+        message: req.body.message,
+        avatar: req.body.avatar,
+        time: new Date().toLocaleString('en-us', {
+          month: 'short',
+          year: 'numeric',
+          timeZoneName: 'short',
+          hour: 'numeric',
+          minute: 'numeric',
+        }),
+      },
+    },
+  }
+
+  try {
+    const result = await prisma.blog.update({
+      data: dbData,
+      where: {
+        id: parseInt(req.body.blogId),
+      },
+    })
+    if (result) res.json({ success: true })
   } catch (err) {
     res.status(500).send(err)
   }
