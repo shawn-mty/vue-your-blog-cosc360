@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const apiClientMulti = axios.create({
+const apiClient = axios.create({
   baseURL: `http://localhost:3000`,
   withCredentials: false, // This is the default
   headers: {
@@ -9,44 +9,15 @@ const apiClientMulti = axios.create({
     'Access-Control-Allow-Origin': '*',
   },
 })
-const apiClientJson = axios.create({
-  baseURL: `http://localhost:3000`,
-  withCredentials: true, // This is the default
-  headers: {
-    Accept: 'application/json',
-    'Content-Type': 'application/json',
-  },
-})
 
 export default {
-  getBlog(id) {
-    return apiClientMulti.get('/blog/' + id)
-  },
+  // getEvents() {
+  //   return apiClient.get('/events')
+  // },
+  // getEvent(id) {
+  //   return apiClient.get('/events/' + id)
+  // },
   createUser(userData) {
-    return apiClientMulti.post('/create-user', userData)
+    return apiClient.post('/user', userData)
   },
-
-  checkCredentials(userData) {
-    return apiClientJson.post('/signin/', userData)
-  },
-
-  logout() {
-    return apiClientJson.get('/logout')
-  },
-
-  createBlog(blogData) {
-    return apiClientMulti.post('/create-blog', blogData)
-  },
-}
-
-export const getBlogs = () => {
-  return apiClientJson.get('/blogs')
-}
-
-export const createComment = commentData => {
-  return apiClientJson.post('/create-comment', commentData)
-}
-
-export const editProfile = profileData => {
-  return apiClientMulti.post('/edit-profile', profileData)
 }
