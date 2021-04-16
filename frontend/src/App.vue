@@ -32,13 +32,14 @@
           </v-app-bar-nav-icon>
         </template>
         <v-card>
-          <v-chip-group color="primary" mandatory class=" ml-2">
+          <v-chip-group color="primary" mandatory class=" ml-3">
             <v-chip filter>Blogs</v-chip>
-            <v-chip filter>Comments</v-chip>
           </v-chip-group>
 
           <v-spacer></v-spacer>
           <v-text-field
+            autofocus
+            @keyup.enter="handleSearch"
             v-model="searchInput"
             :loading="loading"
             class="mx-4"
@@ -48,7 +49,10 @@
           ></v-text-field>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="primary" text @click="dialog = false">
+            <v-btn color="secondary" text @click="handleSearch">
+              <v-icon class="mr-2">mdi-autorenew</v-icon> Restore
+            </v-btn>
+            <v-btn color="primary" text @click="handleSearch">
               <v-icon class="mr-2">mdi-magnify</v-icon> Search
             </v-btn>
           </v-card-actions>
@@ -74,6 +78,7 @@
           <v-list-item two-line>
             <v-list-item-avatar>
               <img
+                v-if="currentUser.profileImagePath"
                 :src="'http://localhost:3000/' + currentUser.profileImagePath"
               />
             </v-list-item-avatar>
@@ -161,7 +166,7 @@ export default {
     searchItems: [],
     drawer: false,
     group: null,
-    searchInput: null,
+    searchInput: '',
     loading: false,
   }),
   watch: {
@@ -170,6 +175,11 @@ export default {
     },
   },
   methods: {
+    handleSearch() {
+      this.dialog = false
+      this.$store.commit('setSearchInput', this.searchInput)
+      this.searchInput = ''
+    },
     querySelections() {
       //for the search bar
       this.loading = true
@@ -193,6 +203,7 @@ export default {
         })
       }
     },
+
     changePage() {
       const errors = []
       alert('Beware: You are being transfered to another page!')
